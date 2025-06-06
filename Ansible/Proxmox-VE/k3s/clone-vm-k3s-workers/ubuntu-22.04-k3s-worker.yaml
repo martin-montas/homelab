@@ -1,5 +1,5 @@
 ---
-- name: Clonse a VM from an existing Ubuntu 22.04 template. 
+- name: Clone a VM from an existing Ubuntu 22.04 template. 
   connection: local
   hosts: all
   vars_files:

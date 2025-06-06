@@ -1,0 +1,39 @@
+---
+- name: add an IP to local dns in pihole
+  hosts:  pihole
+  vars_files:
+    - vars.yaml
+  collections:
+    - community.general
+  tasks:
+    #########################################
+    #        add-IP-local-DNS-record
+    #########################################
+    - name:  add-IP-local-DNS-record
+      ansible.builtin.lineinfile:
+        path: /etc/pihole/hosts/custom.list
+        line: "{{ new_ip }} {{ new_domain }}"
+        create: yes
+      register: adding_status
+
+    #########################################
+    #             pihole restart
+    #########################################
+    - name: Restart Pi-hole DNS
+      ansible.builtin.command: pihole restartdns
+      register: restarting_status
+
+    #########################################
+    #         show the results
+    #########################################
+    - name: Show results
+      debug:
+        msg: |
+          Adding status:
+            changed: {{ adding_status.changed | default('undefined') }}
+            stdout: {{ adding_status.stdout | default('undefined') }}
+            stderr: {{ adding_status.stderr | default('undefined') }}
+          Restart status:
+            stdout: {{ restarting_status.stdout | default('undefined') }}
+            stderr: {{ restarting_status.stderr | default('undefined') }}
+      when: adding_status is defined and restarting_status is defined
