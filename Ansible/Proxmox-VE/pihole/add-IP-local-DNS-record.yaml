@@ -1,39 +1,24 @@
 ---
+#  YOU SHOULD EDIT THIS FILE FIRST :
+# Put configuration into read-only mode. This will prevent any changes to the
+# configuration file via the API or CLI. This setting useful when a configuration is
+# to be forced/modified by some third-party application (like infrastructure-as-code
+# providers) and should not be changed by any means.
+# readOnly = true
+
 - name: add an IP to local dns in pihole
-  hosts:  pihole
+  hosts: pihole
+  become: yes
   vars_files:
     - vars.yaml
-  collections:
-    - community.general
   tasks:
-    #########################################
-    #        add-IP-local-DNS-record
-    #########################################
-    - name:  add-IP-local-DNS-record
-      ansible.builtin.lineinfile:
-        path: /etc/pihole/hosts/custom.list
-        line: "{{ new_ip }} {{ new_domain }}"
-        create: yes
-      register: adding_status
+  - name: Insert host block into Pi-hole TOML
+    ansible.builtin.lineinfile:
+      path: /etc/pihole/pihole.toml
+      firstmatch: yes
+      state: present
+      insertafter: '^\s*hosts\s*=\s*\['
+      line:  '   "{{ new_ip }} {{ new_domain }}",'
 
-    #########################################
-    #             pihole restart
-    #########################################
-    - name: Restart Pi-hole DNS
-      ansible.builtin.command: pihole restartdns
-      register: restarting_status
-
-    #########################################
-    #         show the results
-    #########################################
-    - name: Show results
-      debug:
-        msg: |
-          Adding status:
-            changed: {{ adding_status.changed | default('undefined') }}
-            stdout: {{ adding_status.stdout | default('undefined') }}
-            stderr: {{ adding_status.stderr | default('undefined') }}
-          Restart status:
-            stdout: {{ restarting_status.stdout | default('undefined') }}
-            stderr: {{ restarting_status.stderr | default('undefined') }}
-      when: adding_status is defined and restarting_status is defined
+  - name: Restart Pi-hole DNS
+    ansible.builtin.command: pihole reloaddns
