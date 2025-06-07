@@ -19,9 +19,6 @@
         src: "{{ local_omv }}"
         dest: /var/lib/vz/template/iso/openmediavault.iso
         mode: '0644'
-    timeout: 600 # set this timeout based on the size of  the iso
-
-
-
+    timeout: 600 # Set this timeout based on the size of  the iso
 
 
