@@ -1,0 +1,41 @@
+---
+- name:  Install an deploy GrayLog
+  hosts: "{{ new_vm_ip }}"
+  become: yes
+  collections:
+    - community.general
+  vars_files:
+    - vars.yaml
+  tasks:
+    - name: Install GrayLog
+      pkg:
+      - curl
+      - gnupg
+
+    - name: Download MongoDB GPG key
+      get_url:
+        url: https://www.mongodb.org/static/pgp/server-7.0.asc
+        dest: /tmp/mongodb-server-7.0.asc
+        mode: '0644'
+
+    - name: Convert MongoDB GPG key to GPG format
+      command: >
+        gpg --dearmor -o /usr/share/keyrings/mongodb-server-7.0.gpg /tmp/mongodb-server-7.0.asc
+      become: true
+
+    - name: Add MongoDB 7.0 APT repository
+      apt_repository:
+        repo: 'deb [arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse'
+        filename: 'mongodb-org-7.0'
+        state: present
+      become: true
+
+    - name: update cache
+      apt:
+        update_cache: true
+      become: true
+
+    - name: Install MongoDB
+      ansible.builtin.apt:
+        name: mongodb-org
+        state: present
