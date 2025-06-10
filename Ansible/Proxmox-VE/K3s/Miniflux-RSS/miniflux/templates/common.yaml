@@ -1,0 +1,34 @@
+{{/* Append the hardcoded settings */}}
+{{- define "miniflux.harcodedValues" }}
+  env:
+    RUN_MIGRATIONS: "1"
+
+    {{- with .Values.ingress.main }}
+    {{- if .enabled }}
+    BASE_URL: http{{ if .tls }}s{{ end }}://{{ (first .hosts).host }}/
+    {{- end -}}
+    {{- end }}
+
+    {{- with .Values.postgresql }}
+    {{- if .enabled }}
+    DATABASE_PASSWORD:
+      secretKeyRef:
+        name: {{ $.Release.Name }}-postgresql
+        key: {{ if not .auth.password }}postgres-{{ end }}password
+    DATABASE_URL: postgres://{{ default "postgres" .auth.username }}:$(DATABASE_PASSWORD)@{{ $.Release.Name }}-postgresql/{{ .auth.database }}?sslmode=disable
+    {{- end }}
+    {{- end }}
+
+  probes:
+    liveness:
+      custom: true
+      spec:
+        httpGet:
+          path: /healthcheck
+          port: {{ .Values.service.main.ports.http.port }}
+{{- end -}}
+{{- $_ := merge .Values (include "miniflux.harcodedValues" . | fromYaml) -}}
+{{- $_ := merge .Values (include "miniflux.metrics.defaultValues" . | fromYaml) -}}
+
+{{/* Render the templates */}}
+{{ include "bjw-s.common.loader.all" . }}
