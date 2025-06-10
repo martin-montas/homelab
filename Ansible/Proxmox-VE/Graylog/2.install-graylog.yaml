@@ -7,6 +7,18 @@
   vars_files:
     - vars.yaml
   tasks:
+
+    - name: Open firewall ports with UFW
+      ufw:
+        rule: allow
+        port: "{{ item }}"
+      loop:
+        - 9000
+        - 9200
+        - 27017
+        - 9300
+        - 5044
+
     - name: Install GrayLog
       pkg:
       - curl
@@ -39,3 +51,53 @@
       ansible.builtin.apt:
         name: mongodb-org
         state: present
+
+    - name: Get Graylog deb package
+      get_url:
+        url: https://packages.graylog2.org/repo/packages/graylog-{{ graylog_version }}.deb
+        dest: /tmp/graylog.deb
+        mode: '0644'
+
+    - name: Install Graylog
+      ansible.builtin.apt:
+        name: /tmp/graylog.deb
+        state: present
+
+    - name: Start Graylog
+      service:
+        name: graylog
+        state: started
+
+    - name: update cache
+      apt:
+        update_cache: true
+      become: true
+
+    - name: ensure linux vm.max_map_count is set to 262144
+      sysctl:
+        name: "vm.max_map_count"
+        value: "262144"
+        state: present
+      become: true
+
+    - name: generate random password
+      ansible.builtin.command:  openssl rand -hex 32
+      become: true
+
+    - name: ensure linux vm.swappiness is set to 1
+      ansible.builtin.command:  sysctl --system
+      become: true
+
+    - name: Set password_secret in datanode.conf
+      lineinfile:
+        path: /etc/graylog/datanode/datanode.conf
+        regexp: '^password_secret\s*='
+        line: 'password_secret = {{ graylog_password_secret }}'
+        create: yes
+
+    - name: Set opensearch_heap in datanode.conf
+      lineinfile:
+        path: /etc/graylog/datanode/datanode.conf
+        regexp: '^opensearch_heap\s*='
+        line: 'opensearch_heap = 8g'
+        create: yes

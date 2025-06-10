@@ -2,5 +2,4 @@ vars.yaml
 inventory.ini
 todo.md
 ideas.md
-values.yaml
-values2.yaml
+values*
