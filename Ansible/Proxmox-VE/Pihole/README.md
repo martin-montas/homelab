@@ -18,8 +18,8 @@ This is a work in progress, but to add a local dns record to pihole you can use 
 
 ## SOON:
 
-[ ] add the pihole deployment with ansible
-[x] be able to add a local dns record to pihole
+- [ ] add the pihole deployment with ansible
+- [x] be able to add a local dns record to pihole
 
 
 
