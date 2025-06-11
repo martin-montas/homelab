@@ -9,13 +9,13 @@ This is what i did:
 
 ```bash
 
-kubectl create namespace miniflux
-kubectl apply -f miniflux-pv.yaml
-kubectl apply -f miniflux-pvc.yaml
-kubectl apply -f miniflux.yaml
+kubectl  apply -f 1.miniflux-ns.yaml
+kubectl  apply -f 2.nfs-pv.yaml
+kubectl  apply -f 3.nfs-pvc.yaml
+kubectl  apply -f 4.miniflux.yaml
 
 # and finally
-kubectl apply -f miniflux-service.yaml
+kubectl  apply -f 5.miniflux-service.yaml
 # on the last file you can specify which port you want to expose on the slave node
 # for the service
 

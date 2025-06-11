@@ -10,5 +10,5 @@ spec:
     - ReadWriteMany
   storageClassName: nfs
   nfs:
-    path: /mnt/backup
+    path: /mnt/backup/Miniflux-backup
     server: 10.0.0.194
