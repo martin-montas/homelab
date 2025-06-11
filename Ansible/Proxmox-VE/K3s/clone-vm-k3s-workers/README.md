@@ -13,7 +13,7 @@ make sure to change the `vars.yaml` file with the correct values
 Make sure to enable the firewall on the vm k3s workers.
 This repo  will be updated soon with this.
 
-[ ] Add the firewall on the vm k3s workers
-[x] Add the the server to a k3s cluster
+- [ ] Add the firewall on the vm k3s workers
+- [x] Add the the server to a k3s cluster
 
 

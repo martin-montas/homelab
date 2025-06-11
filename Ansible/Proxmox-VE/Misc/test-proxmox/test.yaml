@@ -1,0 +1,74 @@
+---
+- name: Create VM From Proxmox Template
+  hosts: localhost
+  connection: local
+  become: no                # CHANGE THIS: No 'sudo' needed on localhost for Proxmox API calls
+  gather_facts: no
+
+  vars:
+    ansible_python_interpreter: /home/william/main-env/bin/python
+
+  collections:
+    - community.general
+
+  vars_files:
+    - vars.yaml
+
+  tasks:
+    - name: Create VM with Template with Cloud-Init
+      community.general.proxmox_kvm:
+        # credentials
+        api_user: "{{ proxmox_api_user }}"
+        api_password: "{{ proxmox_pass }}" # Strongly consider using API tokens and Ansible Vault here!
+        api_host: "{{ proxmox_api_host }}"
+        node: "{{ proxmox_node }}"
+        vmid: "{{ template_vmid }}"
+        clone: "{{ template_name }}"
+        name: "{{ new_vm_name }}"
+        newid: "{{ new_vm_id }}"
+        format: qcow2
+        ipconfig:
+          ipconfig0: "ip={{ new_vm_ip }}/24,gw={{ new_vm_gateway }}"
+        full: true
+        sshkeys: "{{ lookup('ansible.builtin.file', '~/.ssh/id_rsa.pub') }}"
+        state: present
+        cores: "{{ new_vm_cores }}"
+        memory: "{{ new_vm_memory }}"
+        storage: "{{ vm_storage  }}"
+        agent: 1
+        timeout: 1200
+      register: new_vm
+      # REMOVE THIS LINE: become: true # Not needed here
+
+    - name: Prints the VM creation details
+      debug:
+        var: new_vm
+
+    # Optional: Add a disk resize task here if your new VM disk size is larger than the template's.
+    # - name: Resize VM disk
+    #   community.general.proxmox_disk:
+    #     api_user: "{{ proxmox_api_user }}"
+    #     api_password: "{{ proxmox_pass }}"
+    #     api_host: "{{ proxmox_api_host }}"
+    #     vmid: "{{ new_vm_id }}"
+    #     disk: scsi0 # Or ide0
+    #     size: "{{ new_vm_disk_size }}" # Ensure this variable is defined
+    #     state: resized
+    #   when: new_vm_disk_size is defined
+    #   register: disk_resize_status
+
+    - name: Start the new VM
+      community.general.proxmox_kvm:
+        # credentials
+        api_user: "{{ proxmox_api_user }}"
+        api_password: "{{ proxmox_pass }}"
+        api_host: "{{ proxmox_api_host }}"
+        node: "{{ proxmox_node }}" # Essential to specify the node for existing VM operations
+        vmid: "{{ new_vm_id }}"
+        state: started
+        timeout: 1200
+      register: start_status
+
+    - name: Prints the start of the vm status
+      debug:
+        var: start_status
