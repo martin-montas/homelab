@@ -2,24 +2,17 @@
 - name: Create VM From Proxmox Template
   hosts: localhost
   connection: local
-  become: no                
+  become: no
   gather_facts: no
-
   vars:
     ansible_python_interpreter: /home/william/main-env/bin/python
-
   collections:
     - community.general
-
   vars_files:
     - vars.yaml
-
   tasks:
     - name: Create VM with Template with Cloud-Init
       community.general.proxmox_kvm:
-        ######################################
-        #            credentials             #
-        ######################################
         api_user: "{{ proxmox_api_user }}"
         api_password: "{{ proxmox_pass }}"
         api_host: "{{ proxmox_api_host }}"
@@ -29,15 +22,21 @@
         name: "{{ new_vm_name }}"
         newid: "{{ new_vm_id }}"
         format: qcow2
-        ipconfig:
-          ipconfig0: "ip={{ new_vm_ip }}/24,gw={{ new_vm_gateway }}"
         full: true
+        # Using lookup for SSH keys is correct
         sshkeys: "{{ lookup('ansible.builtin.file', '~/.ssh/id_rsa.pub') }}"
-        state: present
         cores: "{{ new_vm_cores }}"
         memory: "{{ new_vm_memory }}"
-        storage: "{{ vm_storage  }}"
+        storage: "{{ vm_storage }}"
         agent: 1
+        citype: "nocloud"
+        # Corrected ipconfig line:
+        # Ensure static_ip_address includes the CIDR (e.g., "10.0.0.33/24")
+        # Ensure static_dns_servers is a comma-separated string (e.g., "8.8.8.8,8.8.4.4")
+        ipconfig:
+          net0: "ip={{ static_ip_address }},gw={{ static_gateway }},nameserver={{ static_dns_servers }}"
+        # Removed duplicate 'nameservers' parameter, it's covered by ipconfig
+        state: present
         timeout: 1200
       register: new_vm
 
@@ -47,9 +46,6 @@
 
     - name: Start the new VM
       community.general.proxmox_kvm:
-        ######################################
-        #            credentials             #
-        ######################################
         api_user: "{{ proxmox_api_user }}"
         api_password: "{{ proxmox_pass }}"
         api_host: "{{ proxmox_api_host }}"
@@ -62,3 +58,20 @@
     - name: Prints the start of the vm status
       debug:
         var: start_status
+
+    - name: Wait for VM to come up and be reachable
+      ansible.builtin.wait_for_connection:
+        timeout: 300 # Increased timeout for initial boot
+      delegate_to: "{{ new_vm_name }}" # Delegate to the VM by its name
+
+    - name: Verify IP address on eth0
+      ansible.builtin.command: "ip -4 addr show eth0 | grep -oP '(?<=inet\\s)\\d+(\\.\\d+){3}'"
+      register: vm_ip_output
+      delegate_to: "{{ new_vm_name }}"
+      changed_when: false
+      # Compare against the IP part of static_ip_address
+      failed_when: vm_ip_output.stdout.strip() != static_ip_address.split('/')[0]
+
+    - name: Display confirmed VM IP address
+      ansible.builtin.debug:
+        msg: "VM {{ new_vm_name }} has IP: {{ vm_ip_output.stdout.strip() }}"
