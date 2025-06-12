@@ -1,3 +1,7 @@
 vars.yaml
 inventory.ini
+values*
+secrets*
+secret*
+value*
 todo.md
