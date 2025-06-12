@@ -13,14 +13,3 @@ this command on linux
 openssl rand -base64 32  # This will generate a 32 character string
 ```
 
-
-
-
-
-
-
-
-
-
-
-
