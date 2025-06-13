@@ -37,7 +37,6 @@
         update: yes
         timeout: 1200
 
-
     - name: Start the new VM
       community.general.proxmox_kvm:
         api_user: "{{ proxmox_api_user }}"
@@ -47,9 +46,3 @@
         vmid: "{{ new_vm_id }}"
         state: started
         timeout: 1200
-      register: start_status
-
-    - name: Prints the start of the vm status
-      debug:
-        var: start_status
-

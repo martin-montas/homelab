@@ -1,40 +1,48 @@
 ---
-- name: Clone a VM from an existing Ubuntu 22.04 template. 
+- name: Create VM From Proxmox Template
+  hosts: localhost
   connection: local
-  hosts: all
-  vars_files:
-    - vars.yaml
+  become: no
+  gather_facts: no
   vars:
-    ansible_python_interpreter: /home/william/main-env/bin/python3
+    ansible_python_interpreter: /home/william/main-env/bin/python
   collections:
     - community.general
+  vars_files:
+    - vars.yaml
   tasks:
-    - name: Clone a VM from an existing Ubuntu 22.04 template
+    - name: Create VM with Template with Cloud-Init
       community.general.proxmox_kvm:
-        #########################################
-        #              credentials
-        #########################################
         api_user: "{{ proxmox_api_user }}"
         api_password: "{{ proxmox_pass }}"
         api_host: "{{ proxmox_api_host }}"
         node: "{{ proxmox_node }}"
+        vmid: "{{ template_vmid }}"
+        clone: "{{ template_name }}"
+        name: "{{ new_vm_name }}"
+        newid: "{{ new_vm_id }}"
+        format: qcow2
+        full: true
+        timeout: 1200
 
-        clone: "ubuntu-22.04-template" # VM template
-        name:  "home-Cluster-srv-3"
-        vmid: 1001
-        newid: 1002                    # New VM ID
-
-        ide:
-          ide2: "local:cloudinit,format=qcow2"
-        ciuser: "{{ ci_user }}"
-        cipassword: "{{ ci_password }}"
+    - name: Update the new VM
+      community.general.proxmox_kvm:
+        node: "{{ proxmox_node }}"
+        api_host: "{{ proxmox_api_host }}"
+        api_user: "{{ proxmox_api_user }}"
+        api_password: "{{ proxmox_pass }}"
+        name: "{{ new_vm_name }}"
         ipconfig:
-          ipconfig0: "ip=dhcp"
-        sshkeys: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+          ipconfig0: ip={{ static_ip_address }}
+        update: yes
+        timeout: 1200
 
-        net:
-          net0: virtio,bridge=vmbr0
-
-        full: true                     # Full clone, not linked
-        timeout: 600
-        state: present
+    - name: Start the new VM
+      community.general.proxmox_kvm:
+        api_user: "{{ proxmox_api_user }}"
+        api_password: "{{ proxmox_pass }}"
+        api_host: "{{ proxmox_api_host }}"
+        node: "{{ proxmox_node }}"
+        svmid: "{{ new_vm_id }}"
+        sstate: started
+        stimeout: 1200
