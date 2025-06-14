@@ -10,6 +10,7 @@
     - community.general
   vars_files:
     - vars.yaml
+
   tasks:
     - name: Create VM with Template with Cloud-Init
       community.general.proxmox_kvm:
