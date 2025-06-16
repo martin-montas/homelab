@@ -1,0 +1,52 @@
+---
+- name: Create VM From Proxmox Template
+  hosts: localhost
+  become: no
+  gather_facts: no
+  vars:
+    # local interpreter
+    ansible_python_interpreter: /home/william/main-env/bin/python
+  collections:
+    - community.general
+  vars_files:
+    - vars.yaml
+  tasks:
+    - name: Create VM with Template with Cloud-Init
+      community.general.proxmox_kvm:
+        api_user: "{{ proxmox_api_user }}"
+        api_password: "{{ proxmox_pass }}"
+        api_host: "{{ proxmox_api_host }}"
+        node: "{{ proxmox_node }}"
+        vmid: "{{ template_vmid }}"
+        clone: "{{ template_name }}"
+        name: "{{ new_vm_name }}"
+        newid: "{{ new_vm_id }}"
+        format: qcow2
+        full: true
+        timeout: 1200
+
+    - name: Update the new VM
+      community.general.proxmox_kvm:
+        node: "{{ proxmox_node }}"
+        api_host: "{{ proxmox_api_host }}"
+        api_user: "{{ proxmox_api_user }}"
+        api_password: "{{ proxmox_pass }}"
+        name: "{{ new_vm_name }}"
+        ipconfig:
+          ipconfig0: ip={{ static_ip_address }}
+        update: yes
+        timeout: 1200
+
+    - name: Start the new VM
+      community.general.proxmox_kvm:
+        api_user: "{{ proxmox_api_user }}"
+        api_password: "{{ proxmox_pass }}"
+        api_host: "{{ proxmox_api_host }}"
+        node: "{{ proxmox_node }}"
+        vmid: "{{ new_vm_id }}"
+        state: started
+        timeout: 1200
+     
+    - name: wait 60 seconds
+      ansible.builtin.pause:
+        seconds: 60

@@ -1,0 +1,2 @@
+- import_playbook: ./1.ansible-nfs-proxmox-deploy.yaml
+- import_playbook: ./2.ansible-nfs-proxmox-configure.yaml
