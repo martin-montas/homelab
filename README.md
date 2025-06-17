@@ -8,7 +8,8 @@ this repo holds homelab configurations and self-hosted apps for personal use
 - [x]             deploy OpenMediaVault
 - [ ]             deploy a paste bin service
 - [ ]             deploy Graylog
-- [ ]             install a self-hosted password manager
+- [X]             password manager
+- [X]             install a self-hosted password manager
 
 
 

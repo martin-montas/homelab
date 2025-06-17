@@ -5,9 +5,10 @@ metadata:
   name: vaultwarden-pv
 spec:
   capacity:
-    storage: 1Gi
+    storage: 2Gi
   accessModes:
     - ReadWriteMany
+  storageClassName: ""
   nfs:
     server: 10.0.0.194
     path: /mnt/backup/vault-warden # NFS path

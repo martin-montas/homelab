@@ -6,3 +6,5 @@ secret*
 value*
 todo.md
 *.pem
+*.crt
+*.key
