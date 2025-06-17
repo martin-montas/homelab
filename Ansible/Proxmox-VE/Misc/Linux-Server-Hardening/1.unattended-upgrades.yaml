@@ -1,0 +1,29 @@
+---
+- name: Create VM From Proxmox Template
+  hosts: homelab_servers
+  become: no
+  gather_facts: no
+  vars_files:
+    - vars.yaml
+  tasks:
+    - name: Install unattended-upgrades
+      ansible.builtin.apt:
+        name: unattended-upgrades
+        state: present
+      become: true
+
+    - name: Enable unattended-upgrades
+      ansible.builtin.command: unattended-upgrade --dry-run --debug
+      changed_when: false
+      become: true
+
+    - name: Ensure automatic updates are enabled
+      ansible.builtin.copy:
+        dest: /etc/apt/apt.conf.d/20auto-upgrades
+        content: |
+          APT::Periodic::Update-Package-Lists "1";
+          APT::Periodic::Download-Upgradeable-Packages "1";
+          APT::Periodic::AutocleanInterval "7";
+          APT::Periodic::Unattended-Upgrade "1";
+      become: true
+
