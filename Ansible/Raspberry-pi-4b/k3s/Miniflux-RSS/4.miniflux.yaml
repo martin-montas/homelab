@@ -13,6 +13,19 @@ type: Opaque
 stringData:
   postgres-password: changeme
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-data-pvc # New PVC for PostgreSQL data
+  namespace: miniflux
+spec:
+  accessModes:
+    - ReadWriteOnce # Standard for single-node local storage
+  resources:
+    requests:
+      storage: 5Gi # Adjust storage size as needed for PostgreSQL
+  storageClassName: local-path # Use the K3s default local provisioner
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -46,7 +59,7 @@ spec:
       volumes:
       - name: pgdata
         persistentVolumeClaim:
-          claimName: nfs
+          claimName: postgres-data-pvc # Reference the new PostgreSQL PVC
 ---
 apiVersion: v1
 kind: Service
@@ -59,6 +72,19 @@ spec:
     targetPort: 5432
   selector:
     app: miniflux-postgresql
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: miniflux-data-pvc # New PVC for Miniflux data (if needed)
+  namespace: miniflux
+spec:
+  accessModes:
+    - ReadWriteOnce # Standard for single-node local storage
+  resources:
+    requests:
+      storage: 1Gi # Adjust storage size as needed for Miniflux data
+  storageClassName: local-path # Use the K3s default local provisioner
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -92,12 +118,17 @@ spec:
         - name: DATABASE_URL
           value: postgres://postgres:changeme@miniflux-postgresql/miniflux?sslmode=disable
         volumeMounts:
-        - name: nfs
-          mountPath: /var/lib/miniflux  # Optional
+          # Miniflux itself doesn't necessarily need persistent storage for its
+          # core data if the database is external. However, if you store
+          # anything like image caches, attachments, or config files locally,
+          # you'll need this. The default path for Miniflux data is usually
+          # /var/lib/miniflux or similar.
+        - name: miniflux-storage # Name of the volume mount
+          mountPath: /var/lib/miniflux # Common path for application data
       volumes:
-      - name: nfs
+      - name: miniflux-storage # Matches the volumeMounts name
         persistentVolumeClaim:
-          claimName: nfs  # Optional PVC
+          claimName: miniflux-data-pvc # Reference the new Miniflux PVC
 ---
 apiVersion: v1
 kind: Service

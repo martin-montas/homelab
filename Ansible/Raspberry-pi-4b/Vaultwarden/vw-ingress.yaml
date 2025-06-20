@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: vaultwarden-ingress
+  namespace: vaultwarden
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure # Listen on HTTPS
+    traefik.ingress.kubernetes.io/router.tls: "true" # Enable TLS
+    # If you want to redirect HTTP to HTTPS:
+    # traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    # traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+spec:
+  tls:
+  - hosts:
+    - vw.home.interlink # Must match your certificate's CN/SAN
+    secretName: vaultwarden-tls # The secret you just created
+  rules:
+  - host: vw.home.interlink # Match your certificate
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: vaultwarden # This is your NodePort service
+            port:
+              number: 80 # Route to the internal HTTP port of Vaultwarden service
