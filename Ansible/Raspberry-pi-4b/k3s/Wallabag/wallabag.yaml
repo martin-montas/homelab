@@ -1,0 +1,73 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: wallabag
+---
+apiVersion: app/v1
+kind: Deployment
+metadata:
+  name: wallabag
+  namespace: wallabag
+specs:
+  replica: 1
+  selector:
+    matchLabels: 
+      app: wallabag
+  template:
+    metadata:
+      labels:
+        app: wallabag
+    spec:
+      containers:
+        - name:  wallabag 
+          image: wallabag/wallabag:2.6.13
+          env:
+            - name: POSTGRES_USER
+              valueFrom: 
+                secretKeyRef:
+                  name: wallabag
+                  value: POSTGRES_USER
+
+            - name: POSTGRES_PASSWORD
+              valueFrom: 
+                secretKeyRef:
+                  name: wallabag
+                  value: POSTGRES_PASSWORD
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wallabag-postgresql
+  namespace: wallabag
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wallabag-postgresql
+  template:
+    metadata:
+      labels:
+        app: wallabag-postgresql
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:13
+        env:
+        - name: POSTGRES_DB
+          value: wallabag
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          value: changeme
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: pgdata
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: pgdata
+        persistentVolumeClaim:
+          claimName: wallabag-postgresql
+---
