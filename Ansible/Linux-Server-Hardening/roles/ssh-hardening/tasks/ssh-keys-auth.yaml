@@ -4,8 +4,7 @@
   become: false
   gather_facts: no
   vars:
-    local_ssh_pub_key: /home/william/.ssh/id_rsa.pub
-
+    local_ssh_pub_key: " {{ lookup('file', '/home/william/.ssh/id_rsa.pub') }}"
   tasks:
     - name: Load local SSH key
       set_fact:
