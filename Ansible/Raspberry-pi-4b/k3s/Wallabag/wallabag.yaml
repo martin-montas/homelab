@@ -4,13 +4,13 @@ kind: Namespace
 metadata:
   name: wallabag
 ---
-apiVersion: app/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: wallabag
   namespace: wallabag
-specs:
-  replica: 1
+spec:
+  replicas: 1
   selector:
     matchLabels: 
       app: wallabag
@@ -20,21 +20,40 @@ specs:
         app: wallabag
     spec:
       containers:
-        - name:  wallabag 
+        - name: wallabag
           image: wallabag/wallabag:2.6.13
+          ports:
+            - containerPort: 80
           env:
-            - name: POSTGRES_USER
+            - name: DATABASE_USER
               valueFrom: 
                 secretKeyRef:
                   name: wallabag
-                  value: POSTGRES_USER
+                  key: POSTGRES_USER
 
-            - name: POSTGRES_PASSWORD
+            - name: DATABASE_PASSWORD
               valueFrom: 
                 secretKeyRef:
                   name: wallabag
-                  value: POSTGRES_PASSWORD
+                  key: POSTGRES_PASSWORD
 
+            - name: DATABASE_NAME
+              valueFrom: 
+                secretKeyRef:
+                  name: wallabag
+                  key: POSTGRES_DB
+
+            - name: DATABASE_PORT 
+              value: "5432"
+
+            - name: DATABASE_HOST 
+              value: wallabag-postgresql-svc
+
+            - name: SYMFONY__ENV__APP_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: wallabag
+                  key: APP_SECRET
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -55,19 +74,66 @@ spec:
       - name: postgres
         image: postgres:13
         env:
+
         - name: POSTGRES_DB
           value: wallabag
         - name: POSTGRES_USER
-          value: postgres
+          keyFrom: 
+            secretKeyRef:
+              name: wallabag
+              key: POSTGRES_USER
         - name: POSTGRES_PASSWORD
-          value: changeme
+          keyFrom: 
+            secretKeyRef:
+              name: wallabag
+              key: POSTGRES_PASSWORD
         ports:
-        - containerPort: 5432
-        volumeMounts:
-        - name: pgdata
-          mountPath: /var/lib/postgresql/data
+          - containerPort: 5432
+          volumeMounts:
+          - name: pgdata
+            mountPath: /var/lib/postgresql/data
       volumes:
       - name: pgdata
         persistentVolumeClaim:
-          claimName: wallabag-postgresql
+          claimName: wallabag-postgresql-pvc
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wallabag-postgresql-pvc
+  namespace: wallabag
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wallabag-postgresql-svc
+  namespace: wallabag
+spec:
+  selector:
+    app: wallabag-postgresql
+  type: NodePort
+  ports:
+    - port: 5432
+      targetPort: 5432
+      protocol: TCP
+      nodePort: 30082
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wallabag-svc
+  namespace: wallabag
+spec:
+  selector:
+    app: wallabag
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30081
