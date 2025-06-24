@@ -1,0 +1,40 @@
+---
+- name: Deploy PostgreSQL server
+  hosts: pi_servers
+  become: true
+  gather_facts: false
+  vars_files:
+    - vars.yaml
+  tasks:
+    - name: Install psycopg2 system-wide via apt
+      become: true
+      ansible.builtin.apt:
+        name: python3-psycopg2
+        state: present
+
+
+    - name: Install PostgreSQL
+      ansible.builtin.package:
+        name:
+          - postgresql
+          - postgresql-contrib
+          - libpq-dev
+        state: present
+
+    - name: Ensure PostgreSQL is running and enabled
+      ansible.builtin.service:
+        name: postgresql
+        state: started
+        enabled: true
+
+    - name: Create PostgreSQL user manually
+      become: true
+      shell: |
+        sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='{{ db_user }}'" | grep -q 1 || \
+        sudo -u postgres psql -c "CREATE USER {{ db_user }} WITH PASSWORD '{{ db_pass }}';"
+
+    - name: Ensure database exists
+      become: true
+      shell: |
+        sudo -u postgres psql -lqt | cut -d \| -f 1 | grep -qw "{{ db_name }}" || \
+        sudo -u postgres createdb -O {{ db_user }} {{ db_name }}

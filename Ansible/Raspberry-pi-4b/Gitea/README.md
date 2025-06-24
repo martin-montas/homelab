@@ -1,4 +1,17 @@
-# this is a testing directory Template
+# Gitea
+
+
+to deploy gitea on a raspberry pi 4b
+
+
+
+```bash
+ansible-playbook main.yml
+```
+
+
+
+
 
 
 
