@@ -1,7 +1,5 @@
-#SPDX-License-Identifier: MIT-0
 ---
 # tasks file for roles/ssh-hardening
-
 - name: Prevents root login
   import_tasks: prevent-root-login.yaml
 

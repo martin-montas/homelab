@@ -1,0 +1,30 @@
+#SPDX-License-Identifier: MIT-0
+---
+- name: Ensure target directory exists
+  file:
+    path: "{{ miniflux_path }}"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+
+- name: Copy Kubernetes miniflux files to the Raspberry Pi
+  copy:
+    src: "{{ item }}"
+    dest: "{{ miniflux_path }}/{{ item | basename }}"
+    mode: '0644'
+  loop:
+    - miniflux-pvc.yaml 
+    - miniflux.yaml 
+
+# - name: Deploy with k8s module
+#   kubernetes.core.k8s:
+#     state: present
+#     kubeconfig: "{{ kubeconfig_path }}"
+#     src: "{{ role_path }}/files/miniflux-pvc.yaml"
+# 
+# - name: Deploy with k8s module
+#   kubernetes.core.k8s:
+#     state: present
+#     kubeconfig: "{{ kubeconfig_path }}"
+#     src: "{{ role_path }}/files/miniflux.yaml"

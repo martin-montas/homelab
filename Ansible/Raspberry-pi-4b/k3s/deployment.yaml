@@ -1,0 +1,12 @@
+---
+- hosts: pi_servers
+  become: true
+  tasks:
+#   - name: Set up base system
+#     import_role:
+#       name: Miniflux-RSS 
+ 
+    - name: Set up base system
+      import_role:
+        name: Vaultwarden 
+

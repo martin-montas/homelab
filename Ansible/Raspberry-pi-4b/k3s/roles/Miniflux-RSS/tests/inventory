@@ -1,0 +1,10 @@
+#SPDX-License-Identifier: MIT-0
+
+
+
+localhost
+ansible_user=root 
+ansble_python_interpreter=/usr/bin/python3.8
+ansible_password=root
+ansible_port=2222
+

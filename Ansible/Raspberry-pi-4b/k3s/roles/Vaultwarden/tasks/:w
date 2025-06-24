@@ -1,0 +1,28 @@
+#SPDX-License-Identifier: MIT-0
+---
+- name: create directory
+  file:
+    path: "{{ vaultwarden_path }}"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0755
+
+
+- name: copy files to the directory 
+  copy:
+    src: "{{ item }}"
+    dest: "{{ vaultwarden_path }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0755
+  loop: "{{ vaultwarden_files }}"
+
+
+- name: Apply multiple Kubernetes manifests
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig_path }}"
+    src: "{{ role_path }}/files/{{ item }}"
+  loop: "{{ vaultwarden_files }}"
+
