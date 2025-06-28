@@ -1,6 +1,0 @@
----
-- name: Linux Server Hardening
-  hosts: all
-  tasks:
-    roles:
-      - 
