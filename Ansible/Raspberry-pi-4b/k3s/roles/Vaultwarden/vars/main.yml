@@ -6,11 +6,11 @@ kubeconfig_path: /etc/rancher/k3s/k3s.yaml
 
 vaultwarden_files:
   - 1.vw-namespace.yaml
-  - 2.vw-persistent-volume.yaml
   - 3.vw-persistent-VC.yaml
   - 4.secrets.yaml
   - 5.vw-service.yaml
   - 6.vw-deployment.yaml
+  - 7.vw-ingress.yaml
 
 
 # other files

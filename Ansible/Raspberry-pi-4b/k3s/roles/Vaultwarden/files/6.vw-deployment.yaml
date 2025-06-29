@@ -30,9 +30,6 @@ spec:
           value: "0.0.0.0"
         - name: WEBSOCKET_ENABLED
           value: "true"
-        # Add other Vaultwarden environment variables here as needed,
-        # e.g., DATA_FOLDER, SIGNUPS_ALLOWED, ADMIN_TOKEN, etc.
-        # It's recommended to use Kubernetes Secrets for sensitive data like ADMIN_TOKEN.
         - name: ADMIN_TOKEN
           valueFrom:
             secretKeyRef:

@@ -1,12 +1,10 @@
 ---
-- hosts: pi_servers
+- hosts: prod_servers
   become: true
-  tasks:
-#   - name: Set up base system
-#     import_role:
-#       name: Miniflux-RSS 
- 
-    - name: Set up base system
-      import_role:
-        name: Vaultwarden 
+  gather_facts: no
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  roles:
+    - Vaultwarden
+
 
