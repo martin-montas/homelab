@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: miniflux
+  namespace: miniflux
+spec:
+  type: NodePort
+  selector:
+    app: miniflux
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30080  # specify you node port here
+

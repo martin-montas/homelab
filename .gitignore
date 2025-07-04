@@ -1,0 +1,10 @@
+*secret*
+inventory.ini
+.env
+logs
+inventory
+authentik.local-key.pem
+authentik.local.pem
+certificate.crt
+private.key
+todo.md

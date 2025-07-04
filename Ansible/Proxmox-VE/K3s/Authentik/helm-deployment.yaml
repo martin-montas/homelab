@@ -1,0 +1,30 @@
+authentik:
+  error_reporting:
+    enabled: false
+
+  postgresql: {{ .Values.secrets.password }}
+
+server:
+  ingress:
+    ingressClassName: traefik
+    enabled: true
+    hosts:
+      - auth.home.interlink.home # Change this to your domain
+
+postgresql:
+  enabled: true
+  primary:
+    persistence:
+      storageClass: local-path
+      size: 5Gi
+  auth:
+    password: {{ .Values.secrets.password }} 
+
+redis:
+  enabled: true
+  master: 
+    persistence:
+      enabled: true 
+      storageClass: local-path 
+      size: 1Gi 
+

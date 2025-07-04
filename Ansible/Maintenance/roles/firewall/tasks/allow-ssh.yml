@@ -1,0 +1,11 @@
+---
+- name: Allow SSH with ufw
+  hosts: test_vm
+  become: true
+  gather_facts: no
+  tasks:
+
+  - name: Allow SSH
+    community.general.ufw:
+      rule: allow
+      name: OpenSSH

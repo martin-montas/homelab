@@ -1,0 +1,27 @@
+proxmox_api_token_id: "root@pam!my-token"
+proxmox_api_user: "root@pam"
+proxmox_node: "pve"
+proxmox_pass: "rodent45"
+
+proxmox_api_host: "10.0.0.225"
+new_vm_memory: 4096
+new_vm_id: 108
+static_ip_address: 10.0.0.195/24
+template_vmid: 8000
+template_name: ubuntu-cloud
+new_vm_cores: 2
+vm_storage: local-lvm
+static_gateway: 10.0.0.1
+new_vm_name: home-VM-test
+sshkeys: ~/.ssh/id_rsa.pub
+static_dns_servers: "8.8.8.8,8.8.4.4"
+network_interface_name: "ens18"
+allowed_hosts: 10.0.0.0/255.255.255.0
+shared_dir: /mnt/nfs/backups
+
+
+
+
+
+
+
