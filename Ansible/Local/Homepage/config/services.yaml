@@ -1,0 +1,67 @@
+---
+- Self-Hosted:
+    - Pihole:
+        href: https://pi.hole/admin/login
+        description: Pihole admin interface
+        icon: pi-hole.png
+
+    - Vaultwarden:
+        href: https://vw.home.interlink
+        description: Vaultwarden
+        siteMonitor: https://vw.home.interlink
+        icon: vaultwarden.png
+
+    - Miniflux:
+        href: http://pi-prod-1:30080
+        description: Miniflux-Feed
+        namespace: miniflux
+        icon: miniflux.png
+        siteMonitor: http://pi-prod-1.sokoke-centauri.ts.net:30080
+        widget:
+          type: miniflux
+          url: http://pi-prod-1.sokoke-centauri.ts.net:30080
+          key: {{HOMEPAGE_VAR_MINIFLUX_API_KEY}}
+
+- Tailscale-Network:
+    - pi-prod-1:
+        href: https://login.tailscale.com/admin/machines
+        description: Tailscale server
+        ping: pi-prod-1.sokoke-centauri.ts.net
+        icon: tailscale.png
+
+        widget:
+          type: tailscale
+          deviceid: {{HOMEPAGE_VAR_TAILSCALE_DEVICE_ID_1}}
+          key: {{HOMEPAGE_VAR_TAILSCALE_API_KEY}}
+
+    - pi-prod-2:
+        href: https://login.tailscale.com/admin/machines
+        description: Tailscale server
+        ping: pi-prod-2.sokoke-centauri.ts.net
+        icon: tailscale.png
+        widget:
+          type: tailscale
+          deviceid: {{HOMEPAGE_VAR_TAILSCALE_DEVICE_ID_2}}
+          key: {{HOMEPAGE_VAR_TAILSCALE_API_KEY}}
+
+- Netdata:
+  - pi-prod-1:
+      href: http://pi-prod-1.sokoke-centauri.ts.net:19999
+      description: Netdata
+      icon: netdata.png
+      widget:
+        type: netdata
+        url: http://pi-prod-1.sokoke-centauri.ts.net:19999
+        warnings: true
+        criticals: true
+
+  - pi-prod-2:
+      href: http://pi-prod-2.sokoke-centauri.ts.net:19999
+      description: Netdata
+      icon: netdata.png
+      siteMonitor: http://pi-prod-2.sokoke-centauri.ts.net:19999
+      widget:
+        type: netdata
+        url: http://pi-prod-2.sokoke-centauri.ts.net:19999
+        warnings: true
+        criticals: true

@@ -1,0 +1,10 @@
+git_directories:
+  - /var/lib/gitea/{custom,data,log}
+  - /etc/gitea
+
+
+
+db_name: gitea
+db_user: gitea
+db_pass: youwerewarned
+

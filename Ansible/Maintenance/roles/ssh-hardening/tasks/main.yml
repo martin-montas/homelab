@@ -1,0 +1,8 @@
+---
+# tasks file for roles/ssh-hardening
+- name: Prevents root login
+  import_tasks: prevent-root-login.yaml
+
+- name: Allows ssh keys authentication
+  import_tasks: ./ssh-keys-auth.yaml
+

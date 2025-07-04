@@ -1,0 +1,12 @@
+---
+- name: Join a worker to the cluster
+  hosts: all
+  tasks:
+    - name: Join a worker to the cluster
+      shell: |
+        #####################################
+        ## Join a worker to the cluster   ##
+        ##          Needs testing         ## 
+        #####################################
+        curl -sfL https://get.k3s.io | INSTALL_K4S_EXEC="--with-node-id" K3S_URL=https://{{ k3s_master_ip }}:6443 K3S_TOKEN={{ k3s_token }} sh -
+      become: true

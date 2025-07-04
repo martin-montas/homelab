@@ -1,0 +1,20 @@
+#SPDX-License-Identifier: MIT-0
+---
+# vars file for roles/Vaultwarden
+vaultwarden_path: /root/vaultwarden
+kubeconfig_path: /etc/rancher/k3s/k3s.yaml
+
+vaultwarden_files:
+  - 1.vw-namespace.yaml
+  - 3.vw-persistent-VC.yaml
+  - 4.secrets.yaml
+  - 5.vw-service.yaml
+  - 6.vw-deployment.yaml
+  - 7.vw-ingress.yaml
+
+
+# other files
+-- vaultwarden_ssl_files:
+  - certificate.crt
+  - private.key
+

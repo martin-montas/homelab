@@ -1,0 +1,68 @@
+---
+- name: Create VM from Proxmox template
+  hosts: homelab_servers
+  become: false
+  gather_facts: no
+  vars:
+    local_ssh_pub_key: " {{ lookup('file', '/home/william/.ssh/id_rsa.pub') }}"
+  tasks:
+    - name: Load local SSH key
+      set_fact:
+        pubkey: "{{ lookup('file', local_ssh_pub_key) }}"
+      delegate_to: localhost
+      become: false
+
+    - name: Ensure .ssh directory exists
+      file:
+        path: "/home/{{ ansible_user }}/.ssh"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0700'
+      become: true
+
+    # - name: Copy the SSH key to the VM
+    #   ansible.builtin.command:
+    #     cmd: "scp "
+    #   delegate_to: localhost
+    - name: Copy the SSH key to the VM
+      copy:
+        content: "{{ pubkey }}"
+        dest: "/home/{{ ansible_user }}/.ssh/authorized_keys"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0600'
+      become: true
+
+    - name: Set 'PermitRootLogin no' in sshd_config
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?PermitRootLogin'
+        line: 'PermitRootLogin no'
+        state: present
+        backup: yes
+      become: true
+
+    - name: Ensure PubkeyAuthentication is enabled
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?PubkeyAuthentication'
+        line: 'PubkeyAuthentication yes'
+        state: present
+        backup: yes
+      become: true
+
+    - name: Set 'PasswordAuthentication no' in sshd_config
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?PasswordAuthentication'
+        line: 'PasswordAuthentication no'
+        state: present
+        backup: yes
+      become: true
+
+    - name: Restart SSH service
+      systemd:
+        name: ssh
+        state: restarted
+      become: true
