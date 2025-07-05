@@ -2,18 +2,18 @@
 - Self-Hosted:
     - Pihole:
         href: https://pi.hole/admin/login
-        description: Pihole admin interface
+        description: admin pi-hole home DNS
         icon: pi-hole.png
 
     - Vaultwarden:
-        href: https://vw.home.interlink
-        description: Vaultwarden
-        siteMonitor: https://vw.home.interlink
+        href: pi-prod-1.sokoke-centauri.ts.net
+        description: Vaultwarden password manager
+        ping: pi-prod-1.sokoke-centauri.ts.net
         icon: vaultwarden.png
 
     - Miniflux:
         href: http://pi-prod-1:30080
-        description: Miniflux-Feed
+        description: Miniflux-Feed RSS
         namespace: miniflux
         icon: miniflux.png
         siteMonitor: http://pi-prod-1.sokoke-centauri.ts.net:30080
@@ -25,10 +25,9 @@
 - Tailscale-Network:
     - pi-prod-1:
         href: https://login.tailscale.com/admin/machines
-        description: Tailscale server
+        description: Tailscale server Network
         ping: pi-prod-1.sokoke-centauri.ts.net
         icon: tailscale.png
-
         widget:
           type: tailscale
           deviceid: {{HOMEPAGE_VAR_TAILSCALE_DEVICE_ID_1}}
@@ -36,7 +35,7 @@
 
     - pi-prod-2:
         href: https://login.tailscale.com/admin/machines
-        description: Tailscale server
+        description: Tailscale server Network
         ping: pi-prod-2.sokoke-centauri.ts.net
         icon: tailscale.png
         widget:
@@ -44,11 +43,22 @@
           deviceid: {{HOMEPAGE_VAR_TAILSCALE_DEVICE_ID_2}}
           key: {{HOMEPAGE_VAR_TAILSCALE_API_KEY}}
 
-- Netdata:
+    - motorola-moto-g-pure:
+        href: https://login.tailscale.com/admin/machines
+        description: Tailscale server Network 
+        ping: motorola-moto-g-pure.sokoke-centauri.ts.net
+        icon: tailscale.png
+        widget:
+          type: tailscale
+          deviceid: {{HOMEPAGE_VAR_TAILSCALE_DEVICE_ID_3}}
+          key: {{HOMEPAGE_VAR_TAILSCALE_API_KEY}}
+
+- Netdata-monitoring:
   - pi-prod-1:
       href: http://pi-prod-1.sokoke-centauri.ts.net:19999
-      description: Netdata
+      description: Netdata device Monitor
       icon: netdata.png
+      siteMonitor: http://pi-prod-1.sokoke-centauri.ts.net:19999
       widget:
         type: netdata
         url: http://pi-prod-1.sokoke-centauri.ts.net:19999
@@ -57,7 +67,7 @@
 
   - pi-prod-2:
       href: http://pi-prod-2.sokoke-centauri.ts.net:19999
-      description: Netdata
+      description: Netdata device Monitor
       icon: netdata.png
       siteMonitor: http://pi-prod-2.sokoke-centauri.ts.net:19999
       widget:
