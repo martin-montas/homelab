@@ -1,4 +1,3 @@
 ---
-- name: Install ufw from apt in an ansible playbook
-  include_tasks: install-ufw.yml
-
+- import_tasks: install-enable-ufw.yml
+- import_tasks: initial-rules.yml
