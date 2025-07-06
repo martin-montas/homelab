@@ -1,0 +1,11 @@
+---
+
+- name: create the perosonal directory
+  file:
+    path: /home/william/personal
+    state: directory
+
+- name: clone a repo dotfiles repo from git
+  git:
+    repo: https://github.com/martin-montas/dotfiles
+    dest: /home/william/personal/dotfiles
