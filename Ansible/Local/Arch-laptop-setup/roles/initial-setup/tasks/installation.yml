@@ -1,0 +1,35 @@
+---
+- name: install zsh
+  package:
+    name: zsh
+    state: present
+
+- name: install git
+  package:
+    name: git
+    state: present
+
+- name: install sway
+  package:
+    name: sway
+    state: present
+
+- name: install nvim
+  package:
+    name: nvim
+    state: present
+
+- name: install virtualbox
+  package:
+    name: virtualbox
+    state: present
+
+- name: install ghostty
+  package:
+    name: ghostty
+    state: present
+
+- name: install tmux
+  package:
+    name: tmux
+    state: present

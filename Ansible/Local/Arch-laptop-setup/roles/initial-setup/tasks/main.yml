@@ -1,0 +1,2 @@
+- import_tasks: installation.yml
+- import_tasks: config.yml
