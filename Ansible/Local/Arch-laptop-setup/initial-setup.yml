@@ -2,8 +2,8 @@
 - name: Fail2ban configuration and installation
   hosts: local_host
   become: true
-  gather_facts: false
+  gather_facts: true
   roles:
-    - install-sway/
+    - initial-setup/
 
 

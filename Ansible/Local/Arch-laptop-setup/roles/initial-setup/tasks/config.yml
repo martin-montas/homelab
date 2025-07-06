@@ -1,11 +1,71 @@
 ---
-
 - name: create the perosonal directory
   file:
-    path: /home/william/personal
+    path: "/home/{{ ansible_user }}/personal"
     state: directory
 
 - name: clone a repo dotfiles repo from git
   git:
     repo: https://github.com/martin-montas/dotfiles
-    dest: /home/william/personal/dotfiles
+    dest: "/home/{{ ansible_user }}/personal/dotfiles"
+
+- name: Check if Oh My Zsh is already installed
+  stat:
+    path: "/home/{{ ansible_user }}/.oh-my-zsh"
+  register: ohmyzsh_dir
+
+- name: Install Oh My Zsh (non-interactive)
+  become: true
+  become_user: "{{ ansible_user }}"
+  shell: |
+    RUNZSH=no CHSH=no KEEP_ZSHRC=yes \
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+  args:
+    executable: /bin/bash
+  when: not ohmyzsh_dir.stat.exists
+
+- name: install oh-my-posh
+  become: false
+  shell: |
+      curl -s https://ohmyposh.dev/install.sh | bash -s
+
+- name: Copy .zshrc for current user (modular)
+  copy:
+    src:  "/home/{{ ansible_user }}/personal/dotfiles/dot_zshrc"
+    dest: "/home/{{ ansible_user }}/.zshrc"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'
+
+- name: move the tmux.conf file
+  copy:
+    src: "/home/{{ ansible_user }}/personal/dotfiles/dot_config/tmux"
+    dest: "/home/{{ ansible_user }}/.config/tmux"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'
+
+- name: move the nvim config
+  copy:
+    src: "/home/{{ ansible_user }}/personal/dotfiles/dot_config/nvim"
+    dest: "/home/{{ ansible_user }}/.config/nvim"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'
+
+- name: move the nvim config
+  copy:
+    src: "/home/{{ ansible_user }}/personal/dotfiles/dot_config/nvim"
+    dest: "/home/{{ ansible_user }}/.config/nvim"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'
+
+- name: move the nvim config
+  copy:
+    src: "/home/{{ ansible_user }}/personal/dotfiles/dot_config/sway"
+    dest: "/home/{{ ansible_user }}/.config/sway"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'
+
