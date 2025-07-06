@@ -8,15 +8,6 @@
     mode: '0700'
   become: true
 
-- name: Set 'PermitRootLogin no' in sshd_config
-  lineinfile:
-    path: /etc/ssh/sshd_config
-    regexp: '^#?PermitRootLogin'
-    line: 'PermitRootLogin no'
-    state: present
-    backup: yes
-  become: true
-
 - name: Ensure PubkeyAuthentication is enabled
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config

@@ -1,10 +1,6 @@
-- vars:
-  local_ssh_pub_key: " {{ lookup('file', '/home/william/.ssh/id_rsa.pub') }}"
-
 - name: Load local SSH key
   set_fact:
-    pubkey: "{{ lookup('file', local_ssh_pub_key) }}"
-  delegate_to: localhost
+    pubkey: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
 
 - name: Copy the SSH key to the VM
   copy:
