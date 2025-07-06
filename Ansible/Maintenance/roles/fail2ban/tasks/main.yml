@@ -1,3 +1,47 @@
 #SPDX-License-Identifier: MIT-0
 ---
-# tasks file for roles/fail2ban
+
+- name: Install fail2ban
+  apt:
+    name: fail2ban
+    state: present
+
+- name: Enable fail2ban
+  systemd_service:
+    name: fail2ban
+    enabled: true
+
+- name: Copy file with owner and permissions
+  ansible.builtin.copy:
+    src: /etc/fail2ban/jail.conf
+    dest: /etc/fail2ban/jail.local
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Remove existing [sshd] section from jail.local
+  ansible.builtin.replace:
+    path: /etc/fail2ban/jail.local
+    regexp: '^\[sshd\][\s\S]*?(?=^\[|\Z)'
+    replace: ''
+    backup: yes  
+
+- name: Add custom [sshd] jail to dedicated file
+  ansible.builtin.copy:
+    dest: /etc/fail2ban/jail.d/sshd-custom.conf
+    content: |
+      [sshd]
+      enabled = true
+      port = ssh
+      logpath = %(sshd_log)s
+      maxretry = 5
+      bantime = 600
+      findtime = 600
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Restart fail2ban
+  ansible.builtin.service:
+    name: fail2ban
+    state: restarted

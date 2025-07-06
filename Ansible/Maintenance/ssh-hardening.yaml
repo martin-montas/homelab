@@ -1,8 +1,7 @@
 ---
 - name: applies ssh hardening script on a host
-  hosts: test_vm2
-  connnection: local
+  hosts: test_vm
   become: true
-  gather_facts: false
+  gather_facts: true
   roles:
     - ssh-hardening
