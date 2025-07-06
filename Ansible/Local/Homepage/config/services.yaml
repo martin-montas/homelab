@@ -6,7 +6,7 @@
         icon: pi-hole.png
 
     - Vaultwarden:
-        href: pi-prod-1.sokoke-centauri.ts.net
+        href: https://pi-prod-1.sokoke-centauri.ts.net:443
         description: Vaultwarden password manager
         ping: pi-prod-1.sokoke-centauri.ts.net
         icon: vaultwarden.png
