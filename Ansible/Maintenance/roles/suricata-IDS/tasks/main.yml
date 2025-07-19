@@ -1,0 +1,19 @@
+#SPDX-License-Identifier: MIT-0
+---
+- name: Run apt update
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Install suricata
+  package:
+    name: suricata
+    state: present
+
+- name: Start suricata
+  service:
+    name: suricata
+    state: enabled
+
+
+
+

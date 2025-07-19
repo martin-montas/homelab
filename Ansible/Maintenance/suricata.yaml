@@ -1,8 +1,8 @@
 ---
-- name: Fail2ban configuration and installation
+- name: Suricata configuration and installation
   hosts: test_vm
   become: true
   gather_facts: false
   roles:
-    - suricata/
+    - suricata-IDS
 
