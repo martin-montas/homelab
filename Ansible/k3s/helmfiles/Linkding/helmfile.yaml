@@ -1,0 +1,34 @@
+repositories:
+  - name: pascaliske
+    url: https://charts.pascaliske.dev
+
+releases:
+  - name: linkding
+    namespace: linkding
+    chart: pascaliske/linkding
+    values:
+      - image:
+          tag: latest
+        extraEnv:
+          - name: LD_SUPERUSER_NAME
+            valueFrom:
+              secretKeyRef:
+                name: linkding-secret
+                key: LD_SUPERUSER_NAME
+          - name: LD_SUPERUSER_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: linkding-secret
+                key: LD_SUPERUSER_PASSWORD
+        persistence:
+          config:
+            enabled: true
+            mountPath: /etc/linkding
+          data:
+            enabled: true
+            mountPath: /etc/data
+        service:
+          main:
+            ports:
+              http:
+                port: 9090
