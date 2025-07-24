@@ -8,3 +8,4 @@ authentik.local.pem
 certificate.crt
 private.key
 todo.md
+data/
