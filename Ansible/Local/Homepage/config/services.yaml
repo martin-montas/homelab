@@ -11,16 +11,6 @@
         ping: pi-prod-1.sokoke-centauri.ts.net
         icon: vaultwarden.png
 
-    - Miniflux:
-        href: http://pi-prod-1:30080
-        description: Miniflux-Feed RSS
-        namespace: miniflux
-        icon: miniflux.png
-        siteMonitor: http://pi-prod-1.sokoke-centauri.ts.net:30080
-        widget:
-          type: miniflux
-          url: http://pi-prod-1.sokoke-centauri.ts.net:30080
-          key: {{HOMEPAGE_VAR_MINIFLUX_API_KEY}}
 
 - Tailscale-Network:
     - pi-prod-1:
