@@ -20,14 +20,3 @@ the namespace  `monitoring` needs to be created first
 
 
 
-
-
-
-
-
-
-
-
-
-
-
