@@ -6,18 +6,24 @@
     name: fail2ban
     state: present
 
+- name: Install rsyslog
+  apt:
+    name: rsyslog
+    state: present
+
 - name: Enable fail2ban
   systemd_service:
     name: fail2ban
-    enabled: true
+    state: started
 
-- name: Copy file with owner and permissions
+- name: Copy jail.conf to jail.local on remote
   ansible.builtin.copy:
     src: /etc/fail2ban/jail.conf
     dest: /etc/fail2ban/jail.local
     owner: root
     group: root
     mode: '0644'
+    remote_src: yes
 
 - name: Remove existing [sshd] section from jail.local
   ansible.builtin.replace:
@@ -33,7 +39,7 @@
       [sshd]
       enabled = true
       port = ssh
-      logpath = %(sshd_log)s
+      logpath = /var/log/auth.log
       maxretry = 5
       bantime = 600
       findtime = 600
