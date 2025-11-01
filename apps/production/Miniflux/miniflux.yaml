@@ -123,6 +123,7 @@ metadata:
   name: miniflux
   namespace: miniflux
 spec:
+  type: nodePort
   selector:
     app: miniflux
   ports:
