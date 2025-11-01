@@ -1,0 +1,144 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: miniflux
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: miniflux-postgresql
+  namespace: miniflux
+type: Opaque
+stringData:
+  postgres-password: changeme
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-data-pvc # New PVC for PostgreSQL data
+  namespace: miniflux
+spec:
+  accessModes:
+    - ReadWriteOnce # Standard for single-node local storage
+  resources:
+    requests:
+      storage: 5Gi # Adjust storage size as needed for PostgreSQL
+  storageClassName: local-path # Use the K3s default local provisioner
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: miniflux-postgresql
+  namespace: miniflux
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: miniflux-postgresql
+  template:
+    metadata:
+      labels:
+        app: miniflux-postgresql
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15
+        env:
+        - name: POSTGRES_DB
+          value: miniflux
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          value: changeme
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: pgdata
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: pgdata
+        persistentVolumeClaim:
+          claimName: postgres-data-pvc # Reference the new PostgreSQL PVC
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: miniflux-postgresql
+  namespace: miniflux
+spec:
+  ports:
+  - port: 5432
+    targetPort: 5432
+  selector:
+    app: miniflux-postgresql
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: miniflux-data-pvc # New PVC for Miniflux data (if needed)
+  namespace: miniflux
+spec:
+  accessModes:
+    - ReadWriteOnce # Standard for single-node local storage
+  resources:
+    requests:
+      storage: 1Gi # Adjust storage size as needed for Miniflux data
+  storageClassName: local-path # Use the K3s default local provisioner
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: miniflux
+  namespace: miniflux
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: miniflux
+  template:
+    metadata:
+      labels:
+        app: miniflux
+    spec:
+      containers:
+      - name: miniflux
+        image: ghcr.io/miniflux/miniflux:2.2.5
+        ports:
+        - containerPort: 8080
+        env:
+        - name: ADMIN_USERNAME
+          value: admin
+        - name: ADMIN_PASSWORD
+          value: adminpass  # Change this
+        - name: CREATE_ADMIN
+          value: "1"
+        - name: RUN_MIGRATIONS
+          value: "1"
+        - name: DATABASE_URL
+          value: postgres://postgres:changeme@miniflux-postgresql/miniflux?sslmode=disable
+        volumeMounts:
+          # Miniflux itself doesn't necessarily need persistent storage for its
+          # core data if the database is external. However, if you store
+          # anything like image caches, attachments, or config files locally,
+          # you'll need this. The default path for Miniflux data is usually
+          # /var/lib/miniflux or similar.
+        - name: miniflux-storage # Name of the volume mount
+          mountPath: /var/lib/miniflux # Common path for application data
+      volumes:
+      - name: miniflux-storage # Matches the volumeMounts name
+        persistentVolumeClaim:
+          claimName: miniflux-data-pvc # Reference the new Miniflux PVC
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: miniflux
+  namespace: miniflux
+spec:
+  selector:
+    app: miniflux
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
