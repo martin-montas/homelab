@@ -97,7 +97,7 @@ spec:
         - name: ADMIN_USERNAME
           value: admin
         - name: ADMIN_PASSWORD
-          value: adminpass  # Change this
+          value: changemeplease  # Change this
         - name: CREATE_ADMIN
           value: "1"
         - name: RUN_MIGRATIONS
@@ -130,5 +130,5 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 8080
-      nodePort: 30080
+      nodePort: 30081
       protocol: TCP
