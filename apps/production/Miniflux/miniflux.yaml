@@ -13,19 +13,6 @@ type: Opaque
 stringData:
   postgres-password: changeme
 ---
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: postgres-data-pvc # New PVC for PostgreSQL data
-  namespace: miniflux
-spec:
-  accessModes:
-    - ReadWriteOnce # Standard for single-node local storage
-  resources:
-    requests:
-      storage: 5Gi # Adjust storage size as needed for PostgreSQL
-  storageClassName: local-path # Use the K3s default local provisioner
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -142,3 +129,5 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 8080
+      nodePort: 30080
+      protocol: TCP
