@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd
+data:
+  configManagementPlugins: |
+    - name: sops
+      generate:
+        command: ["sh", "-c"]
+        args: ["sops -d $ARGOCD_APP_SOURCE_PATH/secret-enc.yaml | kubectl apply -f -"]
