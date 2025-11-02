@@ -32,7 +32,6 @@ spec:
               secretKeyRef:
                 name: miniflux-secret 
                 key: POSTGRES_PASSWORD
-              
         ports:
         - containerPort: 5432
         volumeMounts:

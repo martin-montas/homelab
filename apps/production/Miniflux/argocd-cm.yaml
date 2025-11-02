@@ -9,4 +9,4 @@ data:
     - name: sops
       generate:
         command: ["sh", "-c"]
-        args: ["sops -d $ARGOCD_APP_SOURCE_PATH/secret-enc.yaml | kubectl apply -f -"]
+        args: ["sops -d $ARGOCD_APP_SOURCE_PATH/enc.yaml | kubectl apply -f -"]
