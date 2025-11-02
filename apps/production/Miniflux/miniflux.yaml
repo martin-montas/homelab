@@ -4,15 +4,6 @@ kind: Namespace
 metadata:
   name: miniflux
 ---
-apiVersion: v1
-kind: Secret
-metadata:
-  name: miniflux-postgresql
-  namespace: miniflux
-type: Opaque
-stringData:
-  postgres-password: changeme
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -37,7 +28,11 @@ spec:
         - name: POSTGRES_USER
           value: postgres
         - name: POSTGRES_PASSWORD
-          value: changeme
+          valueFrom:
+              secretKeyRef:
+                name: miniflux-secret 
+                key: POSTGRES_PASSWORD
+              
         ports:
         - containerPort: 5432
         volumeMounts:
@@ -97,13 +92,20 @@ spec:
         - name: ADMIN_USERNAME
           value: admin
         - name: ADMIN_PASSWORD
-          value: changemeplease  # Change this
+          valueFrom:
+              secretKeyRef:
+                name: miniflux-secret 
+                key: ADMIN_PASSWORD
         - name: CREATE_ADMIN
           value: "1"
         - name: RUN_MIGRATIONS
           value: "1"
         - name: DATABASE_URL
-          value: postgres://postgres:changeme@miniflux-postgresql/miniflux?sslmode=disable
+           
+          valueFrom:
+              secretKeyRef:
+                name: miniflux-secret
+                key: DATABASE_URL
         volumeMounts:
           # Miniflux itself doesn't necessarily need persistent storage for its
           # core data if the database is external. However, if you store
