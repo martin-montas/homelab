@@ -2,16 +2,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: linkding
+  name: postgres-service
   namespace: linkding
 spec:
   selector:
-    app: linkding
-  port:
-    - name: http
-      port: 9090
-      targetPort: 9090
-  type: NodePort
+    app: linkding-postgresql
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
 ---
 apiVersion: apps/v1
 kind: Deployment
