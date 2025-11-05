@@ -16,47 +16,47 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: linkding
   namespace: linkding
-  spec:
-    replicas: 1
-    selector:
-      matchLabels:
+  name: linkding
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: linkding
+  template:
+    metadata:
+      labels:
         app: linkding
-    template:
-      metadata:
-        labels:
-          app: linkding
-      spec:
-        containers:
-          - name: linkding
-            image: sissbruecker/linkding:latest
-            ports: 
-              - containerPort: 9090
-            env:
-              - name: LD_DB_ENGINE
-                value: postgres
-              - name: LD_DB_HOST
-                value: linkding-postgresql
-              - name: LD_DB_NAME
-                value: linkding
-              - name: LD_DB_USER
-                value: postgres
-              - name: LD_DB_PASSWORD
-                valueFrom:
-                  secretKeyRef:
-                    name: linkding-secret
-                    key: POSTGRES_PASSWORD
-              - name: LD_SUPERUSER_NAME
-                valueFrom:
-                  secretKeyRef:
-                    name: linkding-secret
-                    key: LD_SUPERUSER_NAME
-              - name: LD_SUPERUSER_PASSWORD
-                valueFrom:
-                  secretKeyRef:
-                    name: linkding-secret
-                    key: LD_SUPERUSER_PASSWORD
+    spec:
+      containers:
+        - name: linkding
+          image: sissbruecker/linkding:latest
+          ports: 
+            - containerPort: 9090
+          env:
+            - name: LD_DB_ENGINE
+              value: postgres
+            - name: LD_DB_HOST
+              value: postgres-service
+            - name: LD_DB_NAME
+              value: linkding
+            - name: LD_DB_USER
+              value: postgres
+            - name: LD_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: linkding-secret
+                  key: POSTGRES_PASSWORD
+            - name: LD_SUPERUSER_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: linkding-secret
+                  key: LD_SUPERUSER_NAME
+            - name: LD_SUPERUSER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: linkding-secret
+                  key: LD_SUPERUSER_PASSWORD
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -71,7 +71,7 @@ spec:
   template:
     metadata:
       labels:
-        app: linding-postgresql
+        app: linkding-postgresql
     spec:
       containers:
       - name: postgres
@@ -94,7 +94,7 @@ spec:
       volumes:
       - name: pgdata
         persistentVolumeClaim:
-          claimName: postgres-data-pvc 
+          claimName: linkding-data-pvc
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -118,6 +118,6 @@ spec:
       app: linkding-postgresql
   ports:
     - name: postgres
-      ports: 5432 
+      port: 5432 
       targetPort: 5432
 ---
