@@ -1,26 +1,32 @@
 ---
 apiVersion: v1
-kind: Service
+kind: Namespace
 metadata:
-  name: postgres-service
-  namespace: linkding
-spec:
-  selector:
-    app: linkding-postgresql
-  ports:
-    - name: postgres
-      port: 5432
-      targetPort: 5432
+  name: linkding
 ---
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: Service
 metadata:
   name: linkding
   namespace: linkding
 spec:
+  selector:
+    app: linkding
+  ports:
+    - name: http
+      port: 9090
+      targetPort: 9090
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: linkding
+  name: linkding
+spec:
   replicas: 1
   selector:
-    matchLabels:          
+    matchLabels:
       app: linkding
   template:
     metadata:
@@ -35,4 +41,88 @@ spec:
           env:
             - name: LD_DB_ENGINE
               value: postgres
-            - name: LD_DB_HOS
+            - name: LD_DB_HOST
+              value: postgres-service
+            - name: LD_DB_NAME
+              value: linkding
+            - name: LD_DB_USER
+              value: postgres
+            - name: LD_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: linkding-secret
+                  key: POSTGRES_PASSWORD
+            - name: LD_SUPERUSER_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: linkding-secret
+                  key: LD_SUPERUSER_NAME
+            - name: LD_SUPERUSER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: linkding-secret
+                  key: LD_SUPERUSER_PASSWORD
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: linkding-postgresql
+  namespace: linkding
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: linkding-postgresql
+  template:
+    metadata:
+      labels:
+        app: linkding-postgresql
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15
+          env:
+            - name: POSTGRES_DB
+              value: linkding
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: linkding-secret
+                  key: POSTGRES_PASSWORD
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: pgdata
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: pgdata
+          persistentVolumeClaim:
+            claimName: linkding-data-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: linkding-data-pvc
+  namespace: linkding
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+  namespace: linkding
+spec:
+  selector:
+    app: linkding-postgresql
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
+---
