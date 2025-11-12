@@ -28,6 +28,28 @@ spec:
       labels:
         app: linkding
     spec:
+      initContainers:
+        - name: wait-for-postgres
+          image: postgres:15
+          command: ['sh', '-c', 'until pg_isready -h postgres-service -p 5432; do sleep 2; done']
+        - name: migrate
+          image: sissbruecker/linkding:latest
+          command: ["python3", "manage.py", "migrate"]
+          env:
+            - name: LD_DB_ENGINE
+              value: postgres
+            - name: LD_DB_HOST
+              value: postgres-service
+            - name: LD_DB_NAME
+              value: linkding
+            - name: LD_DB_USER
+              value: postgres
+            - name: LD_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: linkding-secret
+                  key: POSTGRES_PASSWORD
+
       containers:
         - name: linkding
           image: sissbruecker/linkding:latest
@@ -120,4 +142,3 @@ spec:
     - name: postgres
       port: 5432
       targetPort: 5432
----
