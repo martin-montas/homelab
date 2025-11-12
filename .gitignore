@@ -3,9 +3,8 @@ inventory.ini
 .env
 logs
 inventory
-authentik.local-key.pem
-authentik.local.pem
-certificate.crt
-private.key
+*.pem
+*.crt
+*.key
 todo.md
 data/
