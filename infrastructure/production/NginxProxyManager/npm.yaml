@@ -1,0 +1,99 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: npm
+  namespace: npm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: npm
+  template:
+    metadata:
+      labels:
+        app: npm
+    spec:
+      containers:
+        - name: npm
+          image: jc21/nginx-proxy-manager:2.11.2
+          ports:
+            - name: http
+              containerPort: 80
+            - name: https
+              containerPort: 443
+            - name: admin
+              containerPort: 81
+          env:
+            - name: DB_MYSQL_HOST
+              value: mariadb
+            - name: DB_MYSQL_PORT
+              value: "3306"
+            - name: DB_MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: my-app-secret
+                  key: username
+            - name: DB_MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: my-app-secret
+                  key: password
+            - name: DB_MYSQL_NAME
+              value: npm
+          volumeMounts:
+            - name: npm-data
+              mountPath: /data
+            - name: npm-letsencrypt
+              mountPath: /etc/letsencrypt
+      volumes:
+        - name: npm-data
+          persistentVolumeClaim:
+            claimName: npm-data
+        - name: npm-letsencrypt
+          persistentVolumeClaim:
+            claimName: npm-letsencrypt
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: npm
+  namespace: npm
+spec:
+  type: LoadBalancer
+  selector:
+    app: npm
+  ports:
+    - port: 80
+      targetPort: 80
+      name: http
+    - port: 443
+      targetPort: 443
+      name: https
+    - port: 81
+      targetPort: 81
+      name: admin
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: npm-data
+  namespace: npm
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: npm-letsencrypt
+  namespace: npm
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
