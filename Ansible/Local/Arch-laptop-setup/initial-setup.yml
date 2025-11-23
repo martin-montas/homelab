@@ -1,9 +1,0 @@
----
-- name: Fail2ban configuration and installation
-  hosts: local_host
-  become: true
-  gather_facts: true
-  roles:
-    - initial-setup/
-
-

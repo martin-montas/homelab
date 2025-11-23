@@ -1,2 +1,0 @@
-- import_playbook: ./1.create-vm-from-template.yaml
-- import_playbook: ./2.install-graylog.yaml 

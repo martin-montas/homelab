@@ -1,9 +1,0 @@
----
-- name: Add initial rules
-  community.general.ufw:
-    rule: allow
-    port: 22
-
-- name: Allow everything and enable UFW
-  community.general.ufw:
-    state: enabled
