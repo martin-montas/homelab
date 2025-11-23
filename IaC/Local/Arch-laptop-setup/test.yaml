@@ -1,0 +1,11 @@
+- name: test ansible on localhost
+  hosts: local_host
+  gather_facts: no
+  tasks:
+    - name: id
+      shell: id
+      register: id
+
+    - name: display with debug
+      debug:
+        var: whoami.stdout + id.stdout
