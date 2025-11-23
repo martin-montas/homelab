@@ -1,3 +1,0 @@
-# - import_tasks: ssh-keys-auth.yaml
-# - import_tasks: copy-pub-key-host.yaml
-- import_tasks: disable-root-login.yaml

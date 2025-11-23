@@ -8,3 +8,5 @@ inventory
 *.key
 todo.md
 data/
+*.tfvars
+*.lock.hcl

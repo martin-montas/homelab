@@ -1,2 +1,0 @@
-- import_playbook: ./1.unattended-upgrades.yaml
-- import_playbook: ./2.ssh-keys-auth.yaml
