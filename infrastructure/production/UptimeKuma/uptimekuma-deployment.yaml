@@ -14,6 +14,10 @@ spec:
       labels:
         app: uptime-kuma
     spec:
+      dnsPolicy: None
+      dnsConfig:
+        nameservers:
+          - 10.0.0.115   # Pi-hole IP
       containers:
       - name: uptime-kuma
         image: louislam/uptime-kuma:latest
