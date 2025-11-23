@@ -11,3 +11,4 @@ data/
 *.tfvars
 *.lock.hcl
 .terraform
+terraform.tfstate*
