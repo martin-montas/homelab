@@ -20,9 +20,9 @@ spec:
         ports:
           - containerPort: 3001
         volumeMounts:
-          - name: data
+          - name: kuma-data
             mountPath: /app/data
       volumes:
-      - name: data
+      - name: kuma-data
         persistentVolumeClaim:
           claimName: uptime-kuma-pvc
