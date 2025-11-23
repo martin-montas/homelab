@@ -1,0 +1,7 @@
+---
+- name: apply common role
+  hosts: test_vm
+  become: true
+  gather_facts: false
+  roles:
+    - common

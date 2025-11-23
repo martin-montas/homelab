@@ -1,0 +1,4 @@
+#SPDX-License-Identifier: MIT-0
+---
+local_ssh_pub_key: " {{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+

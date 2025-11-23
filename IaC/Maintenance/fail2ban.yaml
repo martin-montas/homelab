@@ -1,0 +1,8 @@
+---
+- name: Fail2ban configuration and installation
+  hosts: test_vm
+  become: true
+  gather_facts: false
+  roles:
+    - fail2ban/
+

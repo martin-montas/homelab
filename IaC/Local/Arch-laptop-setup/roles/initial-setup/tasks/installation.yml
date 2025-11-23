@@ -1,0 +1,71 @@
+---
+- name: install zsh
+  package:
+    name: zsh
+    state: present
+
+- name: install git
+  package:
+    name: git
+    state: present
+
+- name: install swayfx
+  package:
+    name: swayfx
+    state: present
+
+- name: install nvim
+  package:
+    name: nvim
+    state: present
+
+- name: install virtualbox
+  package:
+    name: virtualbox
+    state: present
+
+- name: install ghostty
+  package:
+    name: ghostty
+    state: present
+
+- name: install tmux
+  package:
+    name: tmux
+    state: present
+
+- name: install curl
+  package:
+    name: curl
+    state: present
+
+- name: install mako
+  package:
+    name: mako
+    state: present
+
+- name: install brightnessctl
+  package:
+    name: brightnessctl
+    state: present
+
+- name: install rofi-wayland
+  package:
+    name: rofi-wayland
+    state: present
+
+- name: install pamixer
+  package:
+    name: pamixer
+    state: present
+
+- name: install librewolf-bin
+  package:
+    name: librewolf-bin
+    state: present
+
+- name: install swww
+  package:
+    name: swww
+    state: present
+

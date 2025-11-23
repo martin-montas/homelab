@@ -1,0 +1,24 @@
+---
+- name: Download Ubuntu ISO to Proxmox OMV NAS
+  hosts: proxmox
+  become: true
+  vars_files:
+    - vars.yaml
+  tasks:
+    - name: List ISO files
+      ansible.builtin.shell: ls "{{ iso_dir }}"
+      register: iso_list
+
+    - name: Show each ISO file
+      debug:
+        msg: "{{ item }}"
+      loop: "{{ iso_list.stdout_lines }}"
+
+    - name: Copy ISO to Proxmox
+      ansible.builtin.copy:
+        src: "{{ local_omv }}"
+        dest: /var/lib/vz/template/iso/openmediavault.iso
+        mode: '0644'
+    timeout: 600 # Set this timeout based on the size of  the iso
+
+

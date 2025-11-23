@@ -1,0 +1,33 @@
+#SPDX-License-Identifier: MIT-0
+---
+- name: Run apt update
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Install suricata
+  package:
+    name: suricata
+    state: present
+
+- name: Start suricata
+  service:
+    name: suricata
+    state: enabled
+
+- name: Edit suricata config
+  ansible.builtin.lineinfile:
+    path: /etc/suricata/suricata.yaml
+    regexp: '^- interface: eth0'
+    replace: '- interface: wlan0'
+
+- name: Set HOME_NET address group
+  ansible.builtin.replace:
+    path: /etc/suricata/suricata.yaml
+    regexp: '^(\s+HOME_NET:\s*)"\[.*\]"'
+    replace: '\1"[10.0.0.0/24]"'
+
+
+
+
+
+
