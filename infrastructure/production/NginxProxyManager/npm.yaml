@@ -60,7 +60,7 @@ metadata:
   name: npm
   namespace: npm
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: npm
   ports:
