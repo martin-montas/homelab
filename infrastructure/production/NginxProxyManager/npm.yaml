@@ -75,6 +75,34 @@ spec:
       name: admin
 ---
 apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: npm-data-pv
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: manual
+  hostPath:
+    path: /mnt/data/npm-data
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: npm-letsencrypt-pv
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: manual
+  hostPath:
+    path: /mnt/data/npm-letsencrypt
+---
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: npm-data
@@ -85,6 +113,7 @@ spec:
   resources:
     requests:
       storage: 5Gi
+  storageClassName: manual
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -97,3 +126,4 @@ spec:
   resources:
     requests:
       storage: 5Gi
+  storageClassName: manual
