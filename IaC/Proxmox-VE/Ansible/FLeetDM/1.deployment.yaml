@@ -1,0 +1,7 @@
+---
+- name: Deploy FleetDM on Proxmox VM
+  hosts: proxmox
+  become: true
+  vars_files:
+    - vars.yaml
+  tasks:
