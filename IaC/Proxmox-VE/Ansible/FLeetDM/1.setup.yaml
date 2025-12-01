@@ -1,0 +1,30 @@
+---
+- name: Setting up the FleetDM on Proxmox VM
+  hosts: ADMIN_VLAN
+  gather_facts: no
+  become: true
+  tasks:
+  - name: Install UFW 
+    ansible.builtin.apt:
+      name: ufw
+      state: present
+
+  - name: Allows openssh on ufw
+    community.general.ufw:
+      rule: allow
+      name: OpenSSH
+
+  - name: Set default outgoing policy to allow
+    community.general.ufw:
+      direction: outgoing
+      default: allow
+
+  - name: Set default incoming policy to deny
+    community.general.ufw:
+      direction: incoming
+      default: deny
+
+  - name: Enable UFW
+    community.general.ufw:
+      state: enabled
+
