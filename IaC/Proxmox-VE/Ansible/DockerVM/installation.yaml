@@ -1,0 +1,6 @@
+---
+- name: Setting up the FleetDM on Proxmox VM
+  hosts: ADMIN_VLAN
+  gather_facts: no
+  become: true
+  tasks:
