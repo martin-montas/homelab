@@ -1,6 +1,8 @@
 *secret*
 inventory.ini
 .env
+vars.yaml
+vars.yml
 logs
 inventory
 *.pem

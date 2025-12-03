@@ -47,6 +47,6 @@ spec:
   type: ClusterIP
   ports:
     - port: 80
-      targetPort: 80
+      targetPort: 30080
   selector:
     app: vaultwarden

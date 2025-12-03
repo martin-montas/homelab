@@ -19,7 +19,7 @@ spec:
           service:
             name: vaultwarden
             port:
-              number: 80
+              number: 443
   tls:
   - hosts:
     - vaultwarden.local
