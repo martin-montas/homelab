@@ -1,0 +1,84 @@
+---
+- name: Deploy FleetDM via Docker Compose
+  hosts: ADMIN_VLAN
+  vars_files: 
+    - vars.yaml
+  become: yes
+
+  tasks:
+
+    - name: Ensure Docker service is started and enabled
+      ansible.builtin.systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Create FleetDM directory
+      ansible.builtin.file:
+        path: "{{ fleet_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Write Docker Compose file
+      ansible.builtin.copy:
+        dest: "{{ fleet_dir }}/docker-compose.yml"
+        content: |
+          version: "3.9"
+
+          services:
+            mariadb:
+              image: mariadb:10.6
+              container_name: fleet-mariadb
+              restart: always
+              environment:
+                MYSQL_ROOT_PASSWORD: {{ fleet_db_root }}
+                MYSQL_DATABASE: {{ fleet_db_name }}
+                MYSQL_USER: {{ fleet_db_user }}
+                MYSQL_PASSWORD: {{ fleet_db_password }}
+              volumes:
+                - db_data:/var/lib/mysql
+              ports:
+                - "3306:3306"
+
+            fleet:
+              image: fleetdm/fleet:{{ fleet_version }}
+              container_name: fleet
+              depends_on:
+                - mariadb
+              restart: always
+              environment:
+                FLEET_DATABASE_URI: "{{ fleet_db_user }}:{{ fleet_db_password }}@tcp(mariadb:3306)/{{ fleet_db_name }}?parseTime=true"
+                FLEET_SERVER_ADDRESS: ":8080"
+                FLEET_SERVER_NO_TLS: "true"
+              ports:
+                - "8080:8080"
+              volumes:
+                - fleet-data:/var/lib/fleet
+
+          volumes:
+            db_data:
+            fleet-data:
+
+    - name: Create FleetDM Docker directory
+      file:
+        path: /opt/fleetdm
+        state: directory
+        mode: '0755'
+
+    - name: Copy FleetDM docker-compose.yml
+      copy:
+        src: files/docker-compose.yaml
+        dest: /opt/fleetdm/docker-compose.yml
+
+    - name: Copy FleetDM .env file to remote
+      copy:
+        src: files/.env
+        dest: /opt/fleetdm/.env
+        
+    - name: Pull and start FleetDM containers
+      community.docker.docker_compose_v2:
+        project_src: /opt/fleetdm   # corrected path
+        state: present
+        pull: always
+        recreate: always
+

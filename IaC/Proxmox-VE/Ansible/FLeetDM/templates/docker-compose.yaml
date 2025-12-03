@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  mariadb:
+    image: mariadb:10.6
+    container_name: fleet-mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: fleetrootpassword
+      MYSQL_DATABASE: fleet
+      MYSQL_USER: fleet
+      MYSQL_PASSWORD: fleetpassword
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  fleet:
+    image: fleetdm/fleet:v6.0.2
+    container_name: fleet
+    depends_on:
+      - mariadb
+    restart: always
+    environment:
+      FLEET_DATABASE_URI: "fleet:fleetpassword@tcp(mariadb:3306)/fleet?parseTime=true"
+      FLEET_SERVER_ADDRESS: ":8080"
+      FLEET_SERVER_NO_TLS: "true"  # For local testing without TLS
+    ports:
+      - "8080:8080"
+    volumes:
+      - fleet-data:/var/lib/fleet
+
+volumes:
+  db_data:
+  fleet-data:

@@ -1,0 +1,6 @@
+fleet_dir: /opt/fleetdm
+fleet_db_root: fleetrootpassword
+fleet_db_user: fleet
+fleet_db_password: fleetpassword
+fleet_db_name: fleet
+fleet_version: v6.0.2
