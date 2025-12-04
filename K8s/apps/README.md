@@ -1,1 +1,1 @@
-REMEMEBER TO CREATE THE NAMESPACE THEN SECRETS FIRST
+current app on my k3s homelab
