@@ -1,1 +1,1 @@
-infrastructure manifests files
+infrastructure manifest files
