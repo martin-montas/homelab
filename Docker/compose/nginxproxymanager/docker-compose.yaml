@@ -1,0 +1,30 @@
+---
+volumes:
+  nginxproxymanager-data:
+  nginxproxymanager-ssl:
+  nginxproxymanager-db:
+services:
+  nginxproxymanager:
+    image: docker.io/jc21/nginx-proxy-manager:2.12.6
+    ports:
+      - 80:80
+      - 81:81
+      - 443:443
+    environment:
+      - DB_MYSQL_HOST=db
+      - DB_MYSQL_PORT=3306
+      - DB_MYSQL_USER=npm
+      - DB_MYSQL_PASSWORD=${DB_MYSQL_PASSWORD}
+      - DB_MYSQL_NAME=npm
+    volumes:
+      - nginxproxymanager-data:/data
+      - nginxproxymanager-ssl:/etc/letsencrypt
+  db:
+    image: docker.io/jc21/mariadb-aria:10.11.5
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=npm
+      - MYSQL_USER=npm
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    volumes:
+      - nginxproxymanager-db:/var/lib/mysql
