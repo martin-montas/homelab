@@ -14,3 +14,6 @@ data/
 *.lock.hcl
 .terraform
 terraform.tfstate*
+*.srl
+*.csr
+*.ext
