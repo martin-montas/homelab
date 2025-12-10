@@ -1,6 +1,6 @@
 --- 
 - name:  check uptime of the tailscale DNS
-  hosts: localhost
+  hosts: canary_in_mine
   vars_files: vars.yaml
   tasks:
   - name: ping internal dns server
