@@ -1,0 +1,21 @@
+--- 
+- name:  check uptime of the tailscale DNS
+  hosts: localhost
+  vars_files: vars.yaml
+  tasks:
+  - name: ping internal dns server
+    ansible.builtin.command: ping -c 5 grafana.interlink.home
+    register: ping_result
+    ignore_errors: true
+
+  - name: Notify Discord
+    ansible.builtin.uri:
+      url: "{{ discord_webhook_url }}"
+      method: POST
+      headers:
+        Content-Type: "application/json"
+      body_format: json
+      body:
+        content: "DNS down for Tail network."
+      status_code: 204
+    when: ping_result.rc == 0
