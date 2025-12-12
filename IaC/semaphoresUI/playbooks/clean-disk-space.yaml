@@ -1,0 +1,31 @@
+---
+- name: Remote Commands for cleaning of production servers
+  host:  prod_servers
+  tasks:
+      - name: Run Script on Servers
+        ansible.builtin.shell: |
+            sudo apt clean
+            sudo apt autoclean
+            sudo apt autoremove -y
+            sudo find /var/log -type f -name "*.gz" -delete
+            sudo find /var/log -type f -name "*.1" -delete
+            sudo truncate -s 0 /var/log/syslog
+            sudo truncate -s 0 /var/log/auth.log
+            sudo journalctl --vacuum-size=100M
+            sudo journalctl --vacuum-time=7d
+            docker system prune -a
+            sudo rm -rf /var/lib/apt/lists/*
+            sudo apt update
+        register: cleanup_status
+
+      - name: Notify Discord
+        ansible.builtin.uri:
+          url: "{{ discord_webhook_url }}"
+          method: POST
+          headers:
+            Content-Type: "application/json"
+          body_format: json
+          body:
+            content: "There was an error with cleaning files from prodcution."
+          status_code: 204
+        when: cleanup_status.rc != 0
