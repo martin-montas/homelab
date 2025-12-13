@@ -1,0 +1,25 @@
+---
+- name: 
+  hosts: docker_vm
+  become: true
+  tasks:
+    - name: Install Trivy
+      ansible.builtin.package:
+        name: trivy
+        state: present
+    
+    - name: Scan running containers with Trivy
+      ansible.builtin.shell: |
+        LOG_DIR=/var/log/trivy
+        LOG_FILE=$LOG_DIR/docker-image-scan.log
+
+        mkdir -p "$LOG_DIR"
+
+        docker ps --format '{{.Image}}' | sort -u | while read img; do
+          echo "[$(date -Is)] Scanning image: $img" >> "$LOG_FILE"
+          trivy image --exit-code 1 --severity HIGH,CRITICAL "$img" >> "$LOG_FILE" 2>&1
+        done
+
+    - name: Scan running containers with Trivy in k8s
+      ansible.builtin.shell: |
+        trivy k8s cluster
