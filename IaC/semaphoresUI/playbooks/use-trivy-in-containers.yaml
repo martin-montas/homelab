@@ -5,7 +5,7 @@
   tasks:
     - name: Scan running containers with Trivy
       ansible.builtin.shell: |
-      ls /usr/local/bin/trivy
+        ls /usr/local/bin/trivy
       register: trivy_installed
 
     - name: Install Trivy
