@@ -3,10 +3,16 @@
   hosts: docker_vm
   become: true
   tasks:
+    - name: Scan running containers with Trivy
+      ansible.builtin.shell: |
+      ls /usr/local/bin/trivy
+      register: trivy_installed
+
     - name: Install Trivy
-      ansible.builtin.package:
-        name: trivy
-        state: present
+      ansible.builtin.shell: |
+        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh
+        sudo mv trivy /usr/local/bin/
+      when: trivy_installed.rc != 0
     
     - name: Scan running containers with Trivy
       ansible.builtin.shell: |
