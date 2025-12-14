@@ -21,7 +21,7 @@
 
         mkdir -p "$LOG_DIR"
 
-        docker ps --format '{{.Image}}' | sort -u | while read img; do
+        docker ps --format '{{'{{'}}.Image{{' '}}}}' | sort -u | while read img; do
           echo "[$(date -Is)] Scanning image: $img" >> "$LOG_FILE"
           trivy image --exit-code 1 --severity HIGH,CRITICAL "$img" >> "$LOG_FILE" 2>&1
         done
