@@ -20,3 +20,7 @@ kubectl create secret tls vaultwarden-cert \
   --key=vaultwarden.key \
   -n vaultwarden
 ```
+
+
+### this command creates the admin token
+openssl rand -base64 48

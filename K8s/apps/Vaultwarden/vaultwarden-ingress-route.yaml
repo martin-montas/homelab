@@ -1,6 +1,6 @@
-# vaultwarden-ingressroute.yaml
-apiversion: traefik.io/v1alpha1
-kind: ingressroute
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
 metadata:
   name: vaultwarden
   namespace: vaultwarden
@@ -8,7 +8,7 @@ spec:
   entrypoints:
     - websecure
   routes:
-  - match: host(`vaultwarden.local`)
+  - match: host(`thevault.interlink.home`)
     kind: rule
     services:
     - name: vaultwarden

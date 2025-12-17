@@ -1,31 +1,31 @@
 ---
-- name: 
+- name: Scan containers with Trivy
   hosts: docker_vm
   become: true
+  gather_facts: false
   tasks:
-    - name: Scan running containers with Trivy
-      ansible.builtin.shell: |
-        ls /usr/local/bin/trivy
-      register: trivy_installed
 
-    - name: Install Trivy
+    - name: Check if Trivy is installed
+      ansible.builtin.shell: which trivy
+      register: trivy_installed
+      ignore_errors: true
+
+    - name: Install Trivy if missing
       ansible.builtin.shell: |
         curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh
-        sudo mv trivy /usr/local/bin/
-      when: trivy_installed.rc != 0
-    
-    - name: Scan running containers with Trivy
+        mv ./bin/trivy /usr/local/bin/trivy
+      args:
+        creates: /usr/local/bin/trivy
+
+    - name: Scan running Docker containers
       ansible.builtin.shell: |
         LOG_DIR=/var/log/trivy
         LOG_FILE=$LOG_DIR/docker-image-scan.log
 
         mkdir -p "$LOG_DIR"
 
-        docker ps --format '{{'{{'}}.Image{{' '}}}}' | sort -u | while read img; do
+        docker ps --format '{{"{{"}}.Image{{"}}"}}' | sort -u | while read img; do
           echo "[$(date -Is)] Scanning image: $img" >> "$LOG_FILE"
-          trivy image --exit-code 1 --severity HIGH,CRITICAL "$img" >> "$LOG_FILE" 2>&1
+          trivy image --exit-code 1 --severity HIGH,CRITICAL "$img" >> "$LOG_FILE" 2>&1 || true
         done
-
-    - name: Scan running containers with Trivy in k8s
-      ansible.builtin.shell: |
-        trivy k8s cluster
+      ignore_errors: true
