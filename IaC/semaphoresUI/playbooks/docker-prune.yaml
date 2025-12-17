@@ -1,6 +1,6 @@
 ---
 - name: Docker housekeeping – prune unused resources
-  hosts: all
+  hosts: docker_vm
   become: true
   gather_facts: false
 
