@@ -17,4 +17,5 @@ terraform.tfstate*
 *.srl
 *.csr
 *.ext
+hosts
 Docker/lab-dash/config/
