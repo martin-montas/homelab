@@ -1,0 +1,24 @@
+---
+- name: checks for disk usage of different servers and sends alert to Discord
+  hosts: prod_servers
+  become: true
+  tasks:
+    - name: Check disk usage percentage on /
+      ansible.builtin.shell: |
+        df / --output=pcent | tail -1 | tr -dc '0-9'
+      register: disk_usage
+      changed_when: false
+
+    - name: Notify Discord if disk usage is above 80%
+      ansible.builtin.uri:
+        url: "{{ discord_webhook_url }}"
+        method: POST
+        headers:
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          content: >
+            🚨 Disk usage alert on {{ inventory_hostname }}:
+            Disk usage is at {{ disk_usage.stdout }}%
+        status_code: 204
+      when: disk_usage.stdout | int > 80

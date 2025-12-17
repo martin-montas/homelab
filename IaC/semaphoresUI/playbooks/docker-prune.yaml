@@ -1,0 +1,24 @@
+---
+- name: Docker prune and send alerts
+  hosts: prod_servers
+  become: true
+  tasks:
+    - name: prunes Docker 
+      ansible.builtin.shell: |
+      docker system prune -f
+
+      register: command_status
+
+    - name: Notify Discord if disk usage is above 80%
+      ansible.builtin.uri:
+        url: "{{ discord_webhook_url }}"
+        method: POST
+        headers:
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          content: >
+            🚨 Alert on the Docker machine {{ inventory_hostname }}:
+            Docker Prune failed {{ disk_usage.stdout }}%
+        status_code: 204
+      when: command_status.rc != 0
