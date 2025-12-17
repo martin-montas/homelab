@@ -1,0 +1,15 @@
+---
+- name: Take snapshots of all running VMs
+  hosts: proxmox_serv_1
+  become: true
+  tasks:
+
+    - name: Take snapshot of all running VMs
+      ansible.builtin.shell: |
+        for vmid in $(qm list | awk '$3=="running" {print $1}'); do
+            SNAPNAME="auto-$(date +%F-%H%M%S)"
+            qm snapshot $vmid $SNAPNAME --description "Auto snapshot of running VM"
+        done
+      register: command_status
+      failed_when: command_status.rc not in [0, 255]
+      changed_when: true
