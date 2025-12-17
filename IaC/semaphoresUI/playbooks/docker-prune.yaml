@@ -1,24 +1,20 @@
 ---
-- name: Docker prune and send alerts
-  hosts: docker_vm
+- name: Docker housekeeping – prune unused resources
+  hosts: all
   become: true
+  gather_facts: false
+
   tasks:
-    - name: prunes Docker 
-      ansible.builtin.shell: |
-        docker system prune -f
+    - name: Confirm playbook execution
+      debug:
+        msg: "Starting Docker prune on {{ inventory_hostname }}"
 
-      register: command_status
+    - name: Prune unused Docker objects
+      command: >
+        docker system prune -af --volumes
+      register: prune_output
+      changed_when: "'Total reclaimed space' in prune_output.stdout"
 
-    - name: Notify with Discord 
-      ansible.builtin.uri:
-        url: "{{ discord_webhook_url }}"
-        method: POST
-        headers:
-          Content-Type: "application/json"
-        body_format: json
-        body:
-          content: >
-            🚨 Alert on the Docker machine {{ inventory_hostname }}:
-            Docker Prune failed {{ command_status.stdout }}%
-        status_code: 204
-      when: command_status.rc != 0
+    - name: Show reclaimed space
+      debug:
+        var: prune_output.stdout
