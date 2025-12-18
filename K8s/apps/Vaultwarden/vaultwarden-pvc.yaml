@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","kind":"PersistentVolumeClaim","metadata":{"annotations":{},"name":"vaultwarden-pvc","namespace":"vaultwarden"},"spec":{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"2Gi"}},"storageClassName":"","volumeName":"vaultwarden-pv"}}
+    pv.kubernetes.io/bind-completed: "yes"
+  creationTimestamp: "2025-12-14T22:37:35Z"
+  finalizers:
+  - kubernetes.io/pvc-protection
+  name: vaultwarden-pvc
+  namespace: vaultwarden
+  resourceVersion: "151114"
+  uid: 1e5337a3-3319-4de7-8e99-f4891047d4be
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: ""
+  volumeMode: Filesystem
+  volumeName: vaultwarden-pv
+status:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 2Gi
+  phase: Bound
