@@ -2,6 +2,9 @@
 - name: Take snapshots of all running VMs
   hosts: proxmox_serv_1
   become: true
+  vars:
+    - 
+
   tasks:
 
     - name: Take snapshot of all running VMs
