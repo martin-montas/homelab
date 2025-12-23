@@ -1,0 +1,12 @@
+- name: Push pfSense config to NAS via scp
+  hosts: pfsense
+  gather_facts: no
+  vars_files:
+    - vars.yaml
+
+  tasks:
+    - name: Copy config.xml to NAS
+      raw: >
+        scp /cf/conf/config.xml
+        john@"{{ nas_ip  }}":/mnt/omv_nfs/pfsense-backups/config.xml
+
