@@ -17,14 +17,14 @@ provider "proxmox" {
 resource "proxmox_vm_qemu" "ubuntu" {
   name        = "vm-docker-prod-2"
   target_node = "pve"
-  clone       = "Ubuntu-22.04-Cloud-Init"
-  vmid        = 107
+  clone       = "Ubuntu-22.04"
+  vmid        = 109
   cpu {
 
-    cores = 2 
+    cores = 2
   }
   memory           = 4096
-  agent            = 1
+  agent            = 0
   boot             = "order=scsi0"
   scsihw           = "virtio-scsi-single"
   vm_state         = "running"
@@ -47,7 +47,7 @@ resource "proxmox_vm_qemu" "ubuntu" {
     id     = 0
     bridge = "vmbr1"
     model  = "virtio"
-    tag    = 40
+    tag    = 30
   }
   ciuser     = var.user
   cipassword = var.pass
