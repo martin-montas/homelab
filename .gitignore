@@ -7,6 +7,8 @@ logs
 inventory
 *.pem
 *.crt
+*.sqlite
+*.rdb
 *.key
 todo.md
 data/
