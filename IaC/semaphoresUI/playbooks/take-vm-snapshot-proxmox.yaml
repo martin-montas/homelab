@@ -11,5 +11,9 @@
   tasks:
     - name: Run vzdump backup on each VM
       ansible.builtin.command: >
-        vzdump {{ item }} --storage omv_proxmox_backup --mode snapshot --compress zstd
+        vzdump {{ item }} 
+        --storage omv_proxmox_backup 
+        --mode snapshot 
+        --compress zstd
+        --prune-backups keep-last=3
       loop: "{{ backup_vms }}"

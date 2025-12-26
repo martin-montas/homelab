@@ -1,17 +1,12 @@
 services:
   homarr:
-    container_name: homarr-prod-1
+    container_name: homarr
     image: ghcr.io/homarr-labs/homarr:latest
     restart: unless-stopped
     volumes:
-      # Mount the local appdata folder for persistent storage
-      - ./appdata:/appdata
-      # Required if you want the Docker Integration to manage other containers
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock # Optional: for Docker integration
+      - ./homarr/appdata:/appdata
+    environment:
+      - SECRET_ENCRYPTION_KEY=95e34cead9307a2b8bda5e453d2a5d25e8b63e3cf113cf64f087692a8740de63
     ports:
       - '7575:7575'
-    environment:
-      # Replace with a random 64-character hex string (e.g., openssl rand -hex 32)
-      - SECRET_ENCRYPTION_KEY=4371df2d325b0152d82b6f96343201ec2a425a8b01fcbcb1369da41349acb8bd
-      # Optional: set your timezone
-      - TZ=America/New_York
