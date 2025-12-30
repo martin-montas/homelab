@@ -5,9 +5,9 @@ metadata:
   name: vaultwarden
   namespace: vaultwarden
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
     - port: 80
-      targetPort: 30080
+      targetPort: 80
   selector:
     app: vaultwarden

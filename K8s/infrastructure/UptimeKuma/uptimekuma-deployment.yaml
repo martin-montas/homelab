@@ -17,7 +17,7 @@ spec:
       dnsPolicy: None
       dnsConfig:
         nameservers:
-          - 10.0.0.115   # Pi-hole IP
+          - 10.0.20.16   # Pi-hole IP
       containers:
       - name: uptime-kuma
         image: louislam/uptime-kuma:latest
