@@ -12,4 +12,3 @@ helm repo update
 ```bash
 helm install promtail grafana/promtail -f promtail-values.yaml -n monitoring --create-namespace
 ```
-
