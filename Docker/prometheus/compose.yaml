@@ -1,0 +1,8 @@
+services:
+  prometheus:
+    ports:
+      - 9090:9090
+    volumes:
+      - /home/john/Docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    container_name: prometheus
+    image: prom/prometheus

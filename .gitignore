@@ -22,3 +22,4 @@ terraform.tfstate*
 hosts
 Docker/homarr/configs/*
 Docker/lab-dash/config/*
+*config*
