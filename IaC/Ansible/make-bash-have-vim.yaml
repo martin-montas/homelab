@@ -1,0 +1,14 @@
+---
+- name: Enable vim bindings in bash
+  hosts: prod_servers
+  become: no
+  gather_facts: no
+
+  tasks:
+    - name: Ensure vim mode is enabled in .bashrc
+      ansible.builtin.lineinfile:
+        path: "/home/{{ ansible_user }}/.bashrc"
+        line: "set -o vi"
+        insertafter: EOF
+        create: yes
+
