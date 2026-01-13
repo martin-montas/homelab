@@ -9,9 +9,9 @@
       register: disk_usage
       changed_when: false
 
-    - name: Notify Discord if disk usage is above 80%
+    - name: Notify gotify if disk usage is above 80%
       ansible.builtin.uri:
-        url: "{{ discord_webhook_url }}"
+        url: "{{ gotify_webhook_url }}"
         method: POST
         headers:
           Content-Type: "application/json"

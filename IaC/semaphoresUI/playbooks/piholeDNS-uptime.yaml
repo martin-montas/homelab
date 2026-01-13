@@ -8,9 +8,9 @@
     register: ping_result
     ignore_errors: true
 
-  - name: Notify Discord
+  - name: Notify gotify
     ansible.builtin.uri:
-      url: "{{ discord_webhook_url }}"
+      url: "{{ gotify_webhook_url }}"
       method: POST
       headers:
         Content-Type: "application/json"

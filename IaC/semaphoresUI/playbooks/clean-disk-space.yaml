@@ -25,9 +25,9 @@
         apt update
       register: cleanup_status
 
-    - name: Notify Discord on failure
+    - name: Notify gotify  on failure
       ansible.builtin.uri:
-        url: "{{ discord_webhook_url }}"
+        url: "{{ gotify_webhook_url }}"
         method: POST
         headers:
           Content-Type: "application/json"
