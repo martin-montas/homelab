@@ -4,12 +4,11 @@
   become: yes
   gather_facts: no
   vars:
-    bash_vim_command: 'set -o vi'
+    bashrc_entry: bind '"\C-l":"clear\n"'
   tasks:
     - name: Ensure vim mode is enabled in .bashrc
       ansible.builtin.lineinfile:
         path: "/home/{{ ansible_user }}/.bashrc"
-        line: "{{ bash_vim_command }}"
+        line: "{{ bashrc_entry }}"
         insertafter: EOF
         create: yes
-      become_user: "{{ ansible_user }}"
