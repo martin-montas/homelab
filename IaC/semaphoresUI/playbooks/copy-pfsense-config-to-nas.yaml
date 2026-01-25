@@ -3,7 +3,6 @@
   gather_facts: no
   vars_files:
     - vars.yaml
-
   tasks:
     - name: Copy config.xml to NAS
       raw: >
