@@ -47,7 +47,7 @@ resource "proxmox_vm_qemu" "ubuntu" {
     id     = 0
     bridge = "vmbr1"
     model  = "virtio"
-    tag    = 30
+    tag    = 70
   }
   ciuser     = var.user
   cipassword = var.pass
