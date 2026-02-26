@@ -1,7 +1,7 @@
 ---
 - name: applies ssh hardening script on a host
-  hosts: test_vm
+  hosts: prod_servers
   become: true
-  gather_facts: true
+  become_method: sudo
   roles:
     - ssh-hardening

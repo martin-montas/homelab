@@ -1,18 +1,18 @@
 ---
-- name: Trigger Proxmox vzdump via CLI
+- name: trigger proxmox vzdump via cli
   hosts: proxmox_prod_1
   gather_facts: no
   become: yes
   vars:
     backup_vms:
       - 103
-      - 107
       - 105
+      - 107
   tasks:
-    - name: Run vzdump backup on each VM
+    - name: run vzdump backup on each vm
       ansible.builtin.command: >
         vzdump {{ item }} 
-        --storage omv_proxmox_backup 
+        --storage vm-backup
         --mode snapshot 
         --compress zstd
         --prune-backups keep-last=3
