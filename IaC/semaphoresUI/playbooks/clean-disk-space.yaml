@@ -2,6 +2,7 @@
 - name: Remote Commands for cleaning production servers
   hosts: prod_servers
   become: true
+  gather_facts: false
   tasks:
 
     - name: Run cleanup script on servers
