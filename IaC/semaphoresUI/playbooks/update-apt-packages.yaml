@@ -2,6 +2,7 @@
 - name: 
   hosts: prod_servers
   become: true
+  gather_facts: false
   tasks:
     - name: update apt packages
       apt:
