@@ -8,6 +8,7 @@
       - 103
       - 105
       - 107
+      - 109
   tasks:
     - name: run vzdump backup on each vm
       ansible.builtin.command: >
