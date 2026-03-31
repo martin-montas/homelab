@@ -8,7 +8,7 @@ this repo holds homelab configurations and self-hosted apps for personal use.
 - [X]             vaulttwaden
 - [X]             Tailscale
 - [X]             Miniflux
-- [ ]             Linkding
+- [x]             Linkding
 
 
 
