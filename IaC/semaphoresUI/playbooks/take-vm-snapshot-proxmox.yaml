@@ -13,7 +13,7 @@
     - name: run vzdump backup on each vm
       ansible.builtin.command: >
         vzdump {{ item }} 
-        --storage vm-backup
+        --storage nas-backup
         --mode snapshot 
         --compress zstd
         --prune-backups keep-last=3
