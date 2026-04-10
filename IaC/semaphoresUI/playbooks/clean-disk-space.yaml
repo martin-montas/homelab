@@ -31,9 +31,8 @@
         url: "{{ gotify_webhook_url }}"
         method: POST
         headers:
-          Content-Type: "application/json"
+          Content-Type: "application/json; charset=utf-8"
         body_format: json
-        body:
-          content: "There was an error cleaning production servers. Exit code: {{ cleanup_status.rc }}"
-        status_code: 204
+        body: "There was an error cleaning production servers. Exit code: {{ cleanup_status.rc }}"
+        status_code: 200
       when: cleanup_status.rc != 0
