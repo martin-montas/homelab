@@ -5,7 +5,7 @@
   tasks:
     - name: Check disk usage percentage on /
       ansible.builtin.shell: |
-        df / --output=pcent | tail -1 | tr -dc '0-9'
+          df -h / | awk 'NR==2 {print $5}' | tr -d '%'
       register: disk_usage
       changed_when: false
 
@@ -14,11 +14,9 @@
         url: "{{ gotify_webhook_url }}"
         method: POST
         headers:
-          Content-Type: "application/json"
-        body_format: json
-        body:
-          content: >
-            🚨 Disk usage alert on {{ inventory_hostname }}:
-            Disk usage is at {{ disk_usage.stdout }}%
-        status_code: 204
-      when: disk_usage.stdout | int > 80
+           Content-Type: "application/json; charset=utf-8"
+        body: "{{ {'message': 'Disk usage alert on ' ~ inventory_hostname ~ ': ' ~ disk_usage.stdout ~ '%'} | to_json }}"
+        status_code: 200
+      # when:
+      #    - disk_usage.stdout is defined
+      #    - disk_usage.stdout | int > 80
