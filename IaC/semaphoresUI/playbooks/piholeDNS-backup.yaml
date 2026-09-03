@@ -1,0 +1,12 @@
+---
+- name: Scan containers with Trivy
+  hosts: docker_vm
+  become: true
+  gather_facts: false
+  tasks:
+
+    - name: create a pihole backup
+      ansible.builtin.shell: 
+        pihole -a teleporter
+
+    - name:

@@ -23,4 +23,5 @@ hosts
 *host*
 Docker/homarr/configs/*
 Docker/lab-dash/config/*
+opentofu/
 *config*

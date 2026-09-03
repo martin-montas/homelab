@@ -18,7 +18,7 @@ resource "proxmox_vm_qemu" "ubuntu" {
   name        = "srv-family-prod-1"
   target_node = "pve"
   clone       = "Ubuntu-22.04"
-  vmid        = 105
+  vmid        = 106
   cpu {
 
     cores = 2

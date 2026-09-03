@@ -1,0 +1,8 @@
+- name: Docker housekeeping – prune unused resources
+  hosts: docker_prod_2
+  become: true
+  gather_facts: false
+  tasks:
+    - name: backup internal data from my Linkding bookmark app
+      ansible.builtin.command: >
+        tar czf /home/john/linkding-backup-$(date +%F).tar.gz  /home/john/docker/linkding/data
