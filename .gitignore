@@ -25,3 +25,5 @@ Docker/homarr/configs/*
 Docker/lab-dash/config/*
 opentofu/
 *config*
+cache/
+config/
