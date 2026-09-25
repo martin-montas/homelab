@@ -1,0 +1,17 @@
+services:
+  komga:
+    image: gotson/komga:latest
+    container_name: komga
+    restart: unless-stopped
+    ports:
+      - "25600:25600"
+    volumes:
+      - ./config:/config
+      - /mnt/omv_nfs/media:/data
+      - ./cache:/tmp
+
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+

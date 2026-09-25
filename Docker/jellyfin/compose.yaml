@@ -8,9 +8,6 @@ services:
       - "8096:8096"
 
     volumes:
-      - ./config:/config
-      - ./cache:/cache
-      - /mnt/media:/media
-
-    environment:
-      - TZ=America/New_York
+      - /opt/jellyfin/config:/config
+      - /opt/jellyfin/cache:/cache
+      - /mnt/omv_nfs:/media:ro
