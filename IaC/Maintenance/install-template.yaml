@@ -1,0 +1,10 @@
+---
+- name: use the shell
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: use this script as a template for anything on the shell 
+      apt:
+        name: auditd
+        state: present

@@ -1,3 +1,0 @@
----
-- import_tasks: install-enable-ufw.yml
-- import_tasks: initial-rules.yml

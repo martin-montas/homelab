@@ -1,0 +1,47 @@
+---
+- name: Configure Alloy on all clients
+  hosts:  prod_servers
+  become: true
+  vars:
+    candidate_dirs:
+      - /home/john/docker/alloy
+      - /home/john/Docker/alloy
+      - /root/docker/alloy
+
+  tasks:
+    - name: Check candidate directories
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      loop: "{{ candidate_dirs }}"
+      register: docker_dirs
+
+    - name: Select the first existing directory
+      ansible.builtin.set_fact:
+        selected_parent: "{{ item.item }}"
+      loop: "{{ docker_dirs.results }}"
+      when:
+        - item.stat.exists
+        - item.stat.isdir
+        - selected_parent is not defined
+      loop_control:
+        label: "{{ item.item }}"
+
+    - name: Report hosts without an Alloy directory
+      ansible.builtin.debug:
+        msg: "No Alloy directory found on {{ inventory_hostname }}"
+      when: selected_parent is not defined
+
+    - name: Deploy Alloy configuration template
+      ansible.builtin.template:
+        src: config.alloy.j2
+        dest: "{{ selected_parent }}/config.alloy"
+        mode: '0644'
+      when: selected_parent is defined
+      notify: Restart Alloy
+
+  handlers:
+    - name: Restart Alloy
+      community.docker.docker_container:
+        name: alloy
+        state: started
+        restart: true
