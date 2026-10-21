@@ -1,0 +1,26 @@
+---
+- name: install google auth on different machines
+  hosts: prod_servers
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Copy file to server
+      ansible.builtin.copy:
+        src: ./sshd_config
+        dest: /etc/ssh/sshd_config
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Copy file to server
+      ansible.builtin.copy:
+        src: ./sshd
+        dest: /etc/pam.d/sshd
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: install google-auth
+      apt:
+        name: libpam-google-authenticator
+        state: present
