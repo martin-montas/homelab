@@ -1,0 +1,29 @@
+---
+- name: Configure firewalls iptables rules
+  hosts:  DMZ_NET
+  become: true
+  tasks:
+    - name: Set INPUT policy to DROP
+      ansible.builtin.command:
+        cmd: sudo iptables -A INPUT -i lo -j ACCEPT
+
+    - name: Set INPUT policy to DROP
+      ansible.builtin.command:
+        cmd: sudo iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED  -j ACCEPT
+
+    - name: Set INPUT policy to DROP
+      ansible.builtin.command:
+        cmd: sudo iptables -A INPUT -s 100.96.57.22/32  -p tcp --dport 22  -m conntrack --ctstate NEW  -j ACCEPT
+
+    - name: Set INPUT policy to DROP
+      ansible.builtin.command: 
+        cmd: sudo iptables -A INPUT -s 100.64.0.0/10  -p icmp  -j ACCEPT
+
+    - name: Set INPUT policy to DROP
+      ansible.builtin.command:
+        cmd: iptables -P INPUT DROP
+
+    - name: save the all previous rules
+      ansible.builtin.command:
+        cmd: netfilter-persistent save
+
