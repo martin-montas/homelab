@@ -2,6 +2,7 @@
 - name: Configure firewalls iptables rules
   hosts:  DMZ_NET
   become: true
+  gather_facts: false
   tasks:
     - name: Set INPUT policy to DROP
       ansible.builtin.command:

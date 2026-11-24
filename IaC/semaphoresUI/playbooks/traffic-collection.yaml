@@ -1,98 +1,51 @@
+
 ---
-- name: Collect network traffic counters
-  hosts: traffic_hosts
-  gather_facts: true
+- name: Capture network traffic on pfSense routers
+  hosts: pfsense
+  gather_facts: false
+  become: false
 
   vars:
-    mode: start
+    capture_duration: 28800
     run_id: overnight
-    traffic_sample_interval: 60
-    traffic_duration_hours: 8
-    remote_dir: "{{ ansible_user_dir }}/traffic-collection"
-    remote_script: "{{ remote_dir }}/traffic-collector.sh"
-    remote_csv: "{{ remote_dir }}/{{ run_id }}_{{ inventory_hostname }}.csv"
-    traffic_interfaces: "{{ [ansible_default_ipv4.interface] }}"
+    remote_dir: /var/log/traffic-captures
+
+    remote_file: "{{ remote_dir }}/{{ run_id }}_{{ inventory_hostname }}_{{ lookup('pipe', 'date +%Y%m%d-%H%M%S') }}.pcap"
+
+    capture_pidfile: "{{ remote_file }}.pid"
+    capture_log: "{{ remote_file }}.log"
+    timer_log: "{{ remote_file }}.timer.log"
 
   tasks:
-    - name: Create remote collection directory
-      ansible.builtin.file:
-        path: "{{ remote_dir }}"
-        state: directory
-        mode: "0750"
-      when: mode == "start"
+    - name: Create capture directory
+      ansible.builtin.raw: |
+        mkdir -p "{{ remote_dir }}" &&
+        chmod 700 "{{ remote_dir }}"
 
-    - name: Install traffic collector script
-      ansible.builtin.copy:
-        dest: "{{ remote_script }}"
-        mode: "0750"
-        content: |
-          #!/usr/bin/env bash
-          set -u
+    - name: Start tcpdump capture with PID tracking
+      ansible.builtin.raw: |
+        /usr/sbin/daemon \
+          -p "{{ capture_pidfile }}" \
+          -o "{{ capture_log }}" \
+          /usr/sbin/tcpdump \
+          -ni "{{ capture_interface }}" \
+          -s 0 -U \
+          -w "{{ remote_file }}"
+      changed_when: true
 
-          OUTPUT="$1"
-          INTERVAL="$2"
-          DURATION="$3"
-          INTERFACES="$4"
+    - name: Schedule automatic capture termination
+      ansible.builtin.raw: |
+        /usr/sbin/daemon \
+          -o "{{ timer_log }}" \
+          /bin/sh -c 'sleep {{ capture_duration }}; if [ -s "{{ capture_pidfile }}" ]; then kill -INT "$(cat "{{ capture_pidfile }}")"; fi'
+      changed_when: true
 
-          IFS=',' read -r -a IFACES <<< "$INTERFACES"
-
-          echo "timestamp,interface,rx_bytes,tx_bytes" > "$OUTPUT"
-          END=$(( $(date +%s) + DURATION ))
-
-          while [ "$(date +%s)" -lt "$END" ]; do
-            TIMESTAMP=$(date -Is)
-
-            for IFACE in "${IFACES[@]}"; do
-              BASE="/sys/class/net/$IFACE/statistics"
-
-              if [ -r "$BASE/rx_bytes" ] && [ -r "$BASE/tx_bytes" ]; then
-                RX=$(cat "$BASE/rx_bytes")
-                TX=$(cat "$BASE/tx_bytes")
-                printf '%s,%s,%s,%s\n' \
-                  "$TIMESTAMP" "$IFACE" "$RX" "$TX" >> "$OUTPUT"
-              else
-                echo "Interface not found: $IFACE" >&2
-              fi
-            done
-
-            sleep "$INTERVAL"
-          done
-      when: mode == "start"
-
-    - name: Start background traffic collection
-      ansible.builtin.shell: |
-        nohup bash {{ remote_script | quote }} \
-          {{ remote_csv | quote }} \
-          {{ traffic_sample_interval | int }} \
-          {{ (traffic_duration_hours | int * 3600) }} \
-          {{ (traffic_interfaces | join(',')) | quote }} \
-          </dev/null >/dev/null 2>&1 &
-        echo "Collector started with PID $!"
-      args:
-        executable: /bin/bash
-      when: mode == "start"
-      register: collector_start
-
-    - name: Report collector startup
+    - name: Report capture details
       ansible.builtin.debug:
-        msg: "{{ inventory_hostname }}: {{ collector_start.stdout }}"
-      when:
-        - mode == "start"
-        - collector_start is defined
+        msg:
+          - "Capture started on {{ inventory_hostname }}"
+          - "Interface: {{ capture_interface }}"
+          - "Duration: {{ capture_duration }} seconds"
+          - "PCAP: {{ remote_file }}"
+          - "PID file: {{ capture_pidfile }}"
 
-    - name: Create local results directory
-      ansible.builtin.file:
-        path: "{{ playbook_dir }}/traffic-results/{{ run_id }}"
-        state: directory
-        mode: "0750"
-      delegate_to: localhost
-      become: false
-      run_once: true
-      when: mode == "collect"
-
-    - name: Download traffic CSV files
-      ansible.builtin.fetch:
-        src: "{{ remote_csv }}"
-        dest: "{{ playbook_dir }}/traffic-results/{{ run_id }}/"
-        flat: true
-      when: mode == "collect"
